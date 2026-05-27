@@ -1,0 +1,41 @@
+{
+  "name": "b21_ai_group_02",
+  "version": "1.0.0",
+  "description": "ITQA Assignment",
+  "homepage": "https://github.com/Lihaj/B21_AI_Group_02#readme",
+  "bugs": {
+    "url": "https://github.com/Lihaj/B21_AI_Group_02/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lihaj/B21_AI_Group_02.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress run",
+    "test:api": "cypress run --spec 'cypress/e2e/features/api/**/*.feature'",
+    "test:ui": "cypress run --spec 'cypress/e2e/features/ui/**/*.feature'",
+    "test:headed": "cypress open",
+    "allure:generate": "allure generate allure-results --clean -o allure-report",
+    "allure:open": "allure open allure-report"
+  },
+  "devDependencies": {
+    "@badeball/cypress-cucumber-preprocessor": "^24.0.1",
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.8",
+    "allure-cypress": "^3.9.0",
+    "cypress": "^15.15.0",
+    "dotenv": "^17.4.2",
+    "mysql2": "^3.22.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  },
+  "cypress-cucumber-preprocessor": {
+    "nonGlobalStepDefinitions": false,
+    "stepDefinitions": [
+      "cypress/e2e/step_definitions/**/*.ts"
+    ]
+  }
+}

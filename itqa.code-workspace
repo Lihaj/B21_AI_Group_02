@@ -1,0 +1,63 @@
+{
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "cucumber.features": [
+      "cypress/e2e/features/**/*.feature"
+    ],
+    "cucumber.glue": [
+      "cypress/e2e/step_definitions/**/*.ts",
+      "cypress/support/**/*.ts"
+    ],
+    "sqltools.connections": [
+      {
+        "mysqlOptions": {
+          "authProtocol": "default",
+          "enableSsl": "Disabled"
+        },
+        "ssh": "Disabled",
+        "previewLimit": 50,
+        "server": "localhost",
+        "port": 3306,
+        "driver": "MySQL",
+        "name": "ITQA",
+        "group": "ITQA",
+        "database": "qa_training",
+        "username": "root",
+        "password": "root123"
+      }
+    ],
+    "workbench.colorCustomizations": {
+      "activityBar.activeBackground": "#4d0000",
+      "activityBar.background": "#4d0000",
+      "activityBar.foreground": "#e7e7e7",
+      "activityBar.inactiveForeground": "#e7e7e799",
+      "activityBarBadge.background": "#006000",
+      "activityBarBadge.foreground": "#e7e7e7",
+      "commandCenter.border": "#e7e7e799",
+      "sash.hoverBorder": "#4d0000",
+      "statusBar.background": "#1a0000",
+      "statusBar.foreground": "#e7e7e7",
+      "statusBarItem.hoverBackground": "#4d0000",
+      "statusBarItem.remoteBackground": "#1a0000",
+      "statusBarItem.remoteForeground": "#e7e7e7",
+      "titleBar.activeBackground": "#1a0000",
+      "titleBar.activeForeground": "#e7e7e7",
+      "titleBar.inactiveBackground": "#1a000099",
+      "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "peacock.color": "#1a0000"
+  },
+  "extensions": {
+    "recommendations": [
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-mysql",
+        "CucumberOpen.cucumber-official",
+        "waderyan.gitblame",
+        "dbaeumer.vscode-eslint"
+    ]
+  }
+}
