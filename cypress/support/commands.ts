@@ -24,10 +24,15 @@ Cypress.Commands.add('loginAsUser', () => {
 
 Cypress.Commands.add('seedDatabase', () => {
   cy.fixture('seed_data').then((data) => {
-    // Clear existing data (in reverse dependency order)
-    cy.task('queryDb', 'DELETE FROM sales');
-    cy.task('queryDb', 'DELETE FROM plants');
-    cy.task('queryDb', 'DELETE FROM categories');
+    // Clear existing data
+    const cleanupQuery = `
+      SET FOREIGN_KEY_CHECKS = 0;
+      DELETE FROM sales;
+      DELETE FROM plants;
+      DELETE FROM categories;
+      SET FOREIGN_KEY_CHECKS = 1;
+    `;
+    cy.task('queryDb', cleanupQuery);
     
     // Seed Categories
     data.categories.forEach((category: any, index: number) => {

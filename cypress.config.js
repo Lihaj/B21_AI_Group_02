@@ -12,6 +12,7 @@ function queryDb(query, config) {
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'test_db',
+    multipleStatements: true,
   })
     .then((connection) => {
       return connection.query(query).then((result) => {
