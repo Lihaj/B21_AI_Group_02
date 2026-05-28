@@ -574,3 +574,16 @@ npx cypress open
 npx allure generate allure-results --clean -o allure-report
 npx allure open allure-report
 ```
+
+## Running Tests by Tags
+
+```bash
+# Run only API tests:
+npx cypress run --env TAGS="@api"
+
+# Run tests that have both @api AND @admin:
+npx cypress run --env TAGS="@api and @admin"
+
+# Run tests that have @api but NOT @admin:
+npx cypress run --env TAGS="@api and not @admin"
+```
