@@ -1,0 +1,40 @@
+{
+  "categories": [
+    { "name": "Indoor", "parent_id": null },
+    { "name": "Outdoor", "parent_id": null },
+    { "name": "Succulents", "parent_id": 1 },
+    { "name": "Ferns", "parent_id": 1 },
+    { "name": "Foliage", "parent_id": 1 },
+    { "name": "Shrubs", "parent_id": 2 },
+    { "name": "Flowering", "parent_id": 2 }
+  ],
+  "plants": [
+    { "name": "Aloe Vera", "price": 15.5, "quantity": 100, "category_id": 3 },
+    { "name": "Snake Plant", "price": 25.0, "quantity": 60, "category_id": 3 },
+    { "name": "Boston Fern", "price": 18.0, "quantity": 40, "category_id": 4 },
+    { "name": "Ficus", "price": 30.0, "quantity": 25, "category_id": 5 },
+    { "name": "Monstera", "price": 45.0, "quantity": 15, "category_id": 5 },
+    { "name": "Rose", "price": 20.0, "quantity": 80, "category_id": 7 },
+    { "name": "Tulip", "price": 12.0, "quantity": 150, "category_id": 7 },
+    { "name": "Lavender", "price": 15.0, "quantity": 90, "category_id": 6 },
+    { "name": "Hydrangea", "price": 22.5, "quantity": 30, "category_id": 6 },
+    { "name": "Sunflower", "price": 10.0, "quantity": 200, "category_id": 7 }
+  ],
+  "sales": [
+    { "plant_id": 1, "quantity": 2, "total_price": 31.0, "sold_at": "2026-05-28T14:30:00Z" },
+    { "plant_id": 2, "quantity": 1, "total_price": 25.0, "sold_at": "2026-05-28T14:35:00Z" },
+    { "plant_id": 3, "quantity": 3, "total_price": 54.0, "sold_at": "2026-05-28T14:40:00Z" },
+    { "plant_id": 4, "quantity": 1, "total_price": 30.0, "sold_at": "2026-05-28T14:45:00Z" },
+    { "plant_id": 5, "quantity": 2, "total_price": 90.0, "sold_at": "2026-05-28T15:00:00Z" },
+    { "plant_id": 6, "quantity": 5, "total_price": 100.0, "sold_at": "2026-05-28T15:10:00Z" },
+    { "plant_id": 7, "quantity": 10, "total_price": 120.0, "sold_at": "2026-05-28T15:15:00Z" },
+    { "plant_id": 8, "quantity": 4, "total_price": 60.0, "sold_at": "2026-05-28T15:20:00Z" },
+    { "plant_id": 9, "quantity": 2, "total_price": 45.0, "sold_at": "2026-05-28T15:30:00Z" },
+    { "plant_id": 10, "quantity": 5, "total_price": 50.0, "sold_at": "2026-05-28T15:45:00Z" },
+    { "plant_id": 1, "quantity": 1, "total_price": 15.5, "sold_at": "2026-05-28T16:00:00Z" },
+    { "plant_id": 2, "quantity": 2, "total_price": 50.0, "sold_at": "2026-05-28T16:05:00Z" },
+    { "plant_id": 6, "quantity": 2, "total_price": 40.0, "sold_at": "2026-05-28T16:15:00Z" },
+    { "plant_id": 7, "quantity": 5, "total_price": 60.0, "sold_at": "2026-05-28T16:20:00Z" },
+    { "plant_id": 9, "quantity": 1, "total_price": 22.5, "sold_at": "2026-05-28T16:30:00Z" }
+  ]
+}
