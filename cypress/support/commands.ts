@@ -1,5 +1,27 @@
 /// <reference types="cypress" />
 
+Cypress.Commands.add('loginAsAdmin', () => {
+  cy.env(['apiUrl', 'adminUser', 'adminPass']).then((env: any) => {
+    cy.request('POST', `${env.apiUrl}/auth/login`, {
+      username: env.adminUser,
+      password: env.adminPass,
+    }).then((res: Cypress.Response<any>) => {
+      cy.wrap(res.body.token).as('token')
+    })
+  })
+})
+
+Cypress.Commands.add('loginAsUser', () => {
+  cy.env(['apiUrl', 'testUser', 'testPass']).then((env: any) => {
+    cy.request('POST', `${env.apiUrl}/auth/login`, {
+      username: env.testUser,
+      password: env.testPass,
+    }).then((res: Cypress.Response<any>) => {
+      cy.wrap(res.body.token).as('token')
+    })
+  })
+})
+
 Cypress.Commands.add('seedDatabase', () => {
   cy.fixture('seed_data').then((data) => {
     // Clear existing data (in reverse dependency order)
