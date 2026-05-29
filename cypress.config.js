@@ -5,6 +5,8 @@ const mysql = require('mysql2/promise');
 const createBundler = require('@bahmutov/cypress-esbuild-preprocessor');
 const { addCucumberPreprocessorPlugin } = require('@badeball/cypress-cucumber-preprocessor');
 const { createEsbuildPlugin } = require('@badeball/cypress-cucumber-preprocessor/esbuild');
+const { allureCypress } = require('allure-cypress/reporter');
+
 
 function queryDb(query, config) {
   return mysql.createConnection({
@@ -35,6 +37,10 @@ module.exports = defineConfig({
       await addCucumberPreprocessorPlugin(on, config);
       on('file:preprocessor', createBundler({ plugins: [createEsbuildPlugin(config)] }));
       
+      allureCypress(on, config, {
+        resultsDir: "allure-results",
+      });
+
       on('task', {
         queryDb: (query) => {
           return queryDb(query, config);
