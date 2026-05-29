@@ -571,8 +571,7 @@ npx cypress run --spec "cypress/e2e/features/api/admin/categories.feature"
 npx cypress open
 
 # Generate and open Allure report
-npx allure generate allure-results --clean -o allure-report
-npx allure open allure-report
+npm run allure
 ```
 
 ## Running Tests by Tags

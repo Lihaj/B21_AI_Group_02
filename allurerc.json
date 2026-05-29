@@ -1,0 +1,15 @@
+{
+  "name": "ITQA Assignment Test Case Report",
+  "output": "./allure-report",
+  "open": true,
+  "port": 61900,
+  "plugins": {
+    "awesome": {
+      "options": {
+        "reportName": "HelloWorld",
+        "singleFile": true,
+        "theme": "light"
+      }
+    }
+  }
+}
