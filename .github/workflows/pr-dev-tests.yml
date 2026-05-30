@@ -28,13 +28,28 @@ jobs:
 
       - name: Wait for application
         run: |
+          echo "Waiting for UI to become ready..."
           for attempt in {1..30}; do
             if curl -fsS http://localhost:8080/ui/login > /dev/null; then
+              echo "UI is ready!"
+              break
+            fi
+            echo "Waiting for UI... ($attempt/30)"
+            sleep 10
+          done
+
+          echo "Waiting for API to become ready..."
+          for attempt in {1..20}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/auth/login \
+              -H "Content-Type: application/json" \
+              -d '{"username":"__probe__","password":"__probe__"}')
+            # Accept 400/401/403/422 — these mean the API is up but rejected our dummy credentials (expected)
+            if [[ "$STATUS" == "400" || "$STATUS" == "401" || "$STATUS" == "403" || "$STATUS" == "422" ]]; then
+              echo "API is ready! (status: $STATUS)"
               exit 0
             fi
-
-            echo "Waiting for application to become ready... ($attempt/30)"
-            sleep 10
+            echo "Waiting for API... ($attempt/20) [HTTP $STATUS]"
+            sleep 5
           done
 
           echo "Application did not become ready in time"
@@ -45,10 +60,10 @@ jobs:
         env:
           CYPRESS_BASE_URL: http://localhost:8080
           CYPRESS_API_URL: http://localhost:8080
-          CYPRESS_ADMIN_USER: ${{ secrets.CYPRESS_ADMIN_USER || vars.CYPRESS_ADMIN_USER }}
-          CYPRESS_ADMIN_PASS: ${{ secrets.CYPRESS_ADMIN_PASS || vars.CYPRESS_ADMIN_PASS }}
-          CYPRESS_TEST_USER: ${{ secrets.CYPRESS_TEST_USER || vars.CYPRESS_TEST_USER }}
-          CYPRESS_TEST_PASS: ${{ secrets.CYPRESS_TEST_PASS || vars.CYPRESS_TEST_PASS }}
+          CYPRESS_ADMIN_USER: ${{ secrets.CYPRESS_ADMIN_USER }}
+          CYPRESS_ADMIN_PASS: ${{ secrets.CYPRESS_ADMIN_PASS }}
+          CYPRESS_TEST_USER: ${{ secrets.CYPRESS_TEST_USER }}
+          CYPRESS_TEST_PASS: ${{ secrets.CYPRESS_TEST_PASS }}
           DB_HOST: 127.0.0.1
           DB_USER: root
           DB_PASSWORD: root123
