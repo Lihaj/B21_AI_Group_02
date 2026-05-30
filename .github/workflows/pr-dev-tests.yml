@@ -40,11 +40,13 @@ jobs:
 
           echo "Waiting for API to become ready..."
           for attempt in {1..20}; do
-            if curl -fsS http://localhost:8080/api/health > /dev/null; then
-                echo "API is ready!"
-                break
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://localhost:8080/api/health -H "Accept: */*")
+            # Accept 401 — these mean the API is up but rejected our dummy credentials (expected)
+            if [[ "$STATUS" == "200" || "$STATUS" == "401" ]]; then
+              echo "API is ready! (status: $STATUS)"
+              break
             fi
-            echo "Waiting for API... ($attempt/20)"
+            echo "Waiting for API... ($attempt/20) [HTTP $STATUS]"
             sleep 5
           done
 
