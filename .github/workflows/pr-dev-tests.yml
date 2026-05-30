@@ -40,11 +40,10 @@ jobs:
 
           echo "Waiting for API to become ready..."
           for attempt in {1..20}; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8080/auth/login \
-              -H "Content-Type: application/json" \
-              -d '{"username":"__probe__","password":"__probe__"}')
-            # Accept 400/401/403/422 — these mean the API is up but rejected our dummy credentials (expected)
-            if [[ "$STATUS" == "400" || "$STATUS" == "401" || "$STATUS" == "403" || "$STATUS" == "422" ]]; then
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://localhost:8080/api/health \
+              -H "Content-Type: application/json")
+            # Accept 200 — these mean the API is up but rejected our dummy credentials (expected)
+            if [[ "$STATUS" == "200" ]]; then
               echo "API is ready! (status: $STATUS)"
               exit 0
             fi
