@@ -45,10 +45,10 @@ jobs:
         env:
           CYPRESS_BASE_URL: http://localhost:8080
           CYPRESS_API_URL: http://localhost:8080
-          CYPRESS_ADMIN_USER: ${{ vars.CYPRESS_ADMIN_USER }}
-          CYPRESS_ADMIN_PASS: ${{ vars.CYPRESS_ADMIN_PASS }}
-          CYPRESS_TEST_USER: ${{ vars.CYPRESS_TEST_USER }}
-          CYPRESS_TEST_PASS: ${{ vars.CYPRESS_TEST_PASS }}
+          CYPRESS_ADMIN_USER: ${{ secrets.CYPRESS_ADMIN_USER || vars.CYPRESS_ADMIN_USER }}
+          CYPRESS_ADMIN_PASS: ${{ secrets.CYPRESS_ADMIN_PASS || vars.CYPRESS_ADMIN_PASS }}
+          CYPRESS_TEST_USER: ${{ secrets.CYPRESS_TEST_USER || vars.CYPRESS_TEST_USER }}
+          CYPRESS_TEST_PASS: ${{ secrets.CYPRESS_TEST_PASS || vars.CYPRESS_TEST_PASS }}
           DB_HOST: 127.0.0.1
           DB_USER: root
           DB_PASSWORD: root123
