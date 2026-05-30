@@ -5,6 +5,11 @@ on:
     branches:
       - dev
 
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write      
+
 jobs:
   cypress-tests:
     runs-on: ubuntu-latest
@@ -63,17 +68,17 @@ jobs:
           DB_PASSWORD: root123
           DB_NAME: qa_training
         run: npm test
-
+           
       - name: Generate Allure Report
         if: always()
         run: npx allure awesome allure-results --single-file
 
-      - name: Upload Allure report HTML
+      - name: Run Allure Action
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: allure-framework/allure-action@v0
         with:
-          name: allure-report
-          path: allure-report
+          report-directory: "./allure-report"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Stop application stack
         if: always()
