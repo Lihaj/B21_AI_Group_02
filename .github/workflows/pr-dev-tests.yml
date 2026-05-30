@@ -1,0 +1,68 @@
+name: PR Tests
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  cypress-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start application stack
+        working-directory: application
+        run: docker compose up --build -d
+
+      - name: Wait for application
+        run: |
+          for attempt in {1..30}; do
+            if curl -fsS http://localhost:8080/ui/login > /dev/null; then
+              exit 0
+            fi
+
+            echo "Waiting for application to become ready... ($attempt/30)"
+            sleep 10
+          done
+
+          echo "Application did not become ready in time"
+          docker compose -f application/docker-compose.yml logs
+          exit 1
+
+      - name: Run Cypress tests
+        env:
+          CYPRESS_BASE_URL: http://localhost:8080
+          CYPRESS_API_URL: http://localhost:8080
+          CYPRESS_ADMIN_USER: ${{ vars.CYPRESS_ADMIN_USER }}
+          CYPRESS_ADMIN_PASS: ${{ vars.CYPRESS_ADMIN_PASS }}
+          CYPRESS_TEST_USER: ${{ vars.CYPRESS_TEST_USER }}
+          CYPRESS_TEST_PASS: ${{ vars.CYPRESS_TEST_PASS }}
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: root123
+          DB_NAME: qa_training
+        run: npm test
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results
+
+      - name: Stop application stack
+        if: always()
+        working-directory: application
+        run: docker compose down -v

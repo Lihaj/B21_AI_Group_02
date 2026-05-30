@@ -1,0 +1,51 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: qa_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: qa_training
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  seeder:
+    image: mysql:8.0
+    container_name: qa_seeder
+    volumes:
+      - ./init.sql:/init.sql
+    command: sh -c "mysql -h mysql -uroot -proot123 qa_training < /init.sql"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  app:
+    build: .
+    container_name: qa_training_app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      seeder:
+        condition: service_completed_successfully
+    environment:
+      # Override datasource to point at the mysql service
+      # Override localhost with the mysql service name for container-to-container communication
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/qa_training?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root123
+      # api.base-url stays as localhost this is used by the browser, not internally
+      API_BASE-URL: http://localhost:8080
+
+volumes:
+  mysql_data:
