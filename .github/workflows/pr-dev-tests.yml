@@ -64,12 +64,16 @@ jobs:
           DB_NAME: qa_training
         run: npm test
 
-      - name: Upload Allure results
+      - name: Generate Allure Report
+        if: always()
+        run: npx allure awesome allure-results --single-file
+
+      - name: Upload Allure report HTML
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results
-          path: allure-results
+          name: allure-report
+          path: allure-report
 
       - name: Stop application stack
         if: always()
