@@ -11,50 +11,8 @@ permissions:
   checks: write      
 
 jobs:
-  run-application:
-    name: Run Application
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Start application stack
-        working-directory: application
-        run: docker compose up --build -d
-
-      - name: Wait for application
-        run: |
-          echo "Waiting for UI to become ready..."
-          for attempt in {1..30}; do
-            if curl -fsS http://localhost:8080/ui/login > /dev/null; then
-              echo "UI is ready!"
-              break
-            fi
-            echo "Waiting for UI... ($attempt/30)"
-            sleep 10
-          done
-
-          echo "Waiting for API to become ready..."
-          for attempt in {1..20}; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://localhost:8080/api/health -H "Accept: */*")
-            # Accept 401 — these mean the API is up but rejected our dummy credentials (expected)
-            if [[ "$STATUS" == "200" || "$STATUS" == "401" ]]; then
-              echo "API is ready! (status: $STATUS)"
-              break
-            fi
-            echo "Waiting for API... ($attempt/20) [HTTP $STATUS]"
-            sleep 5
-          done
-
-      - name: Stop application stack
-        if: always()
-        working-directory: application
-        run: docker compose down -v
-
   cypress-tests:
     name: Run Tests
-    needs: run-application
     runs-on: ubuntu-latest
 
     steps:
