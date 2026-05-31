@@ -57,16 +57,16 @@ jobs:
 
       - name: Run Cypress tests
         env:
-          CYPRESS_BASE_URL: http://localhost:8080/ui
-          CYPRESS_API_URL: http://localhost:8080/api
+          CYPRESS_BASE_URL: ${{ env.CYPRESS_BASE_URL }}
+          CYPRESS_API_URL: ${{ env.CYPRESS_API_URL }}
           CYPRESS_ADMIN_USER: ${{ secrets.CYPRESS_ADMIN_USER }}
           CYPRESS_ADMIN_PASS: ${{ secrets.CYPRESS_ADMIN_PASS }}
           CYPRESS_TEST_USER: ${{ secrets.CYPRESS_TEST_USER }}
           CYPRESS_TEST_PASS: ${{ secrets.CYPRESS_TEST_PASS }}
-          DB_HOST: 127.0.0.1
-          DB_USER: root
-          DB_PASSWORD: root123
-          DB_NAME: qa_training
+          DB_HOST: ${{ env.CYPRESS_DB_HOST }}
+          DB_USER: ${{ secrets.CYPRESS_TEST_USER }}
+          DB_PASSWORD: ${{ secrets.CYPRESS_TEST_PASS }}
+          DB_NAME: ${{ env.CYPRESS_DB_NAME }}
         run: npm test
            
       - name: Generate Allure Report
