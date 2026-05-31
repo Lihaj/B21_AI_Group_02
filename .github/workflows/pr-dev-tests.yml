@@ -12,8 +12,16 @@ permissions:
 
 jobs:
   cypress-tests:
-    name: Run Tests
+    name: Run Tests (${{ matrix.tag }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tag: "215523H"
+          - tag: "215503X"
+          - tag: "215566P"
+          - tag: "215521B"
 
     steps:
       - name: Checkout repository
@@ -68,7 +76,7 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ vars.DB_NAME }}
-        run: npm test
+        run: npm test -- --env TAGS="@${{ matrix.tag }}"
            
       - name: Generate Allure Report
         if: always()
