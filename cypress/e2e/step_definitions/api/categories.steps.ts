@@ -1,5 +1,18 @@
 /// <reference types="cypress" />
-import { When, Then } from '@badeball/cypress-cucumber-preprocessor';
+import { Then, When } from '@badeball/cypress-cucumber-preprocessor';
+
+When('I send a DELETE request to delete category with id {string}', function (categoryId: string) {
+  cy.get('@token').then((token) => {
+    cy.env(['apiUrl']).then(({ apiUrl }) => {
+      cy.request({
+        method: 'DELETE',
+        url: `${apiUrl}/categories/${categoryId}`,
+        headers: { Authorization: `Bearer ${token}` },
+        failOnStatusCode: false
+      }).as('response')
+    })
+  })
+})
 
 When('I send a POST request to create category with category name {string}', function (categoryName: string) {
   cy.get('@token').then((token) => {
@@ -39,8 +52,22 @@ Then('the retrieved category with id {string} should have the name {string}', (c
         headers: { Authorization: `Bearer ${token}` },
         failOnStatusCode: false
       }).then((response) => {
+        expect(response.status).to.eq(200);
         expect(response.body.name).to.eq(categoryName);
       });
     });
   });
 });
+
+When('I send a GET request to view category with id {string}', (categoryId: string) => {
+  cy.get('@token').then((token) => {
+    cy.env(['apiUrl']).then(({ apiUrl }) => {
+      cy.request({
+        method: 'GET',
+        url: `${apiUrl}/categories/${categoryId}`,
+        headers: { Authorization: `Bearer ${token}` },
+        failOnStatusCode: false
+      }).as('response')
+    })
+  })
+})
