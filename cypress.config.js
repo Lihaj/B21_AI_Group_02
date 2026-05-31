@@ -8,7 +8,7 @@ const { createEsbuildPlugin } = require('@badeball/cypress-cucumber-preprocessor
 const { allureCypress } = require('allure-cypress/reporter');
 
 
-function queryDb(query, config) {
+function queryDb(query) {
   return mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -29,21 +29,22 @@ function queryDb(query, config) {
 }
 
 module.exports = defineConfig({
+  allowCypressEnv: false,
   e2e: {
-    baseUrl: process.env.CYPRESS_BASE_URL,
+    baseUrl: process.env.CYPRESS_FRONTEND_URL,
     specPattern: 'cypress/e2e/**/*.feature',
     chromeWebSecurity: false,
     async setupNodeEvents(on, config) {
       await addCucumberPreprocessorPlugin(on, config);
       on('file:preprocessor', createBundler({ plugins: [createEsbuildPlugin(config)] }));
-      
+
       allureCypress(on, config, {
         resultsDir: "allure-results",
       });
 
       on('task', {
         queryDb: (query) => {
-          return queryDb(query, config);
+          return queryDb(query);
         },
       });
 
