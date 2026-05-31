@@ -97,28 +97,28 @@ jobs:
             fi
 
             node - "$TAG" "$duration_seconds" "$SUMMARY_FILE" <<'NODE'
-const fs = require('fs');
-const [tag, durationSeconds, summaryFile] = process.argv.slice(2);
-const reportPath = 'allure-report/summary.json';
-const report = fs.existsSync(reportPath)
-  ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
-  : { stats: {}, status: 'unknown', newTests: [] };
-const stats = report.stats || {};
-const rows = JSON.parse(fs.readFileSync(summaryFile, 'utf8'));
+          const fs = require('fs');
+          const [tag, durationSeconds, summaryFile] = process.argv.slice(2);
+          const reportPath = 'allure-report/summary.json';
+          const report = fs.existsSync(reportPath)
+            ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
+            : { stats: {}, status: 'unknown', newTests: [] };
+          const stats = report.stats || {};
+          const rows = JSON.parse(fs.readFileSync(summaryFile, 'utf8'));
 
-rows.push({
-  tag,
-  durationSeconds: Number(durationSeconds),
-  total: stats.total ?? 0,
-  passed: stats.passed ?? 0,
-  failed: stats.failed ?? 0,
-  retries: stats.retries ?? 0,
-  newTests: Array.isArray(report.newTests) ? report.newTests.length : 0,
-  status: report.status ?? 'unknown'
-});
+          rows.push({
+            tag,
+            durationSeconds: Number(durationSeconds),
+            total: stats.total ?? 0,
+            passed: stats.passed ?? 0,
+            failed: stats.failed ?? 0,
+            retries: stats.retries ?? 0,
+            newTests: Array.isArray(report.newTests) ? report.newTests.length : 0,
+            status: report.status ?? 'unknown'
+          });
 
-fs.writeFileSync(summaryFile, JSON.stringify(rows, null, 2));
-NODE
+          fs.writeFileSync(summaryFile, JSON.stringify(rows, null, 2));
+          NODE
           done
 
           echo "summary_file=$SUMMARY_FILE" >> "$GITHUB_OUTPUT"
@@ -127,13 +127,17 @@ NODE
       - name: Publish divided Allure summary
         if: always()
         uses: actions/github-script@v7
+        env:
+          SUMMARY_FILE: ${{ steps.collect-summaries.outputs.summary_file }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            const marker = '<!-- allure-tag-summary -->';
-            const summaryFile = '${{ steps.collect-summaries.outputs.summary_file }}';
-            const rows = fs.existsSync(summaryFile) ? JSON.parse(fs.readFileSync(summaryFile, 'utf8')) : [];
+            const marker = '';
+            const summaryFile = process.env.SUMMARY_FILE;
+            
+            // Handle edge case where the summary file might not exist if previous step crashed early
+            const rows = (summaryFile && fs.existsSync(summaryFile)) ? JSON.parse(fs.readFileSync(summaryFile, 'utf8')) : [];
 
             const formatDuration = (seconds) => {
               const totalSeconds = Math.max(0, Number(seconds) || 0);
@@ -162,6 +166,12 @@ NODE
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const issue_number = context.issue.number;
+            
+            if (!issue_number) {
+              console.log("No issue/PR context available to post a comment.");
+              return;
+            }
+
             const comments = await github.paginate(github.rest.issues.listComments, {
               owner,
               repo,
