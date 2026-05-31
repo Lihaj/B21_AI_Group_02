@@ -1,4 +1,4 @@
-name: PR Tests
+name: Run Cypress Test Cases
 
 on:
   pull_request:
@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   cypress-tests:
+    name: Run Tests
     runs-on: ubuntu-latest
 
     steps:

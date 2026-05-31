@@ -29,7 +29,6 @@ function queryDb(query) {
 }
 
 module.exports = defineConfig({
-  allowCypressEnv: false,
   e2e: {
     baseUrl: process.env.CYPRESS_FRONTEND_URL,
     specPattern: 'cypress/e2e/**/*.feature',
