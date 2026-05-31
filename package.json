@@ -19,8 +19,7 @@
     "test:api": "cypress run --spec 'cypress/e2e/features/api/**/*.feature'",
     "test:ui": "cypress run --spec 'cypress/e2e/features/ui/**/*.feature'",
     "test:headed": "cypress open",
-    "allure:generate": "allure generate allure-results --clean -o allure-report",
-    "allure:open": "allure open allure-report"
+    "allure": "npx allure awesome allure-results --single-file && npx allure open allure-report"
   },
   "devDependencies": {
     "@badeball/cypress-cucumber-preprocessor": "^24.0.1",

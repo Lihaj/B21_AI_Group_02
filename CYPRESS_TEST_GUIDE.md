@@ -192,11 +192,13 @@ Arrow functions do not bind `this` — use `function()` in any step that reads a
 // ✅ CORRECT
 When('I send a GET request to {string}', function (endpoint: string) {
   cy.get('@token').then((token) => {
-    cy.request({
-      method: 'GET',
-      url: `${Cypress.env('apiUrl')}${endpoint}`,
-      headers: { Authorization: `Bearer ${token}` },
-    }).as('response')
+    cy.env(['apiUrl']).then(({ apiUrl }) => {
+      cy.request({
+        method: 'GET',
+        url: `${apiUrl}${endpoint}`,
+        headers: { Authorization: `Bearer ${token}` },
+      }).as('response')
+    })
   })
 })
 
@@ -211,19 +213,22 @@ When('I send a GET request to {string}', (endpoint: string) => {
 ```ts
 // ✅ CORRECT
 cy.fixture('testdata').then((data) => {
-  cy.request('POST', `${Cypress.env('apiUrl')}/categories`, { name: data.newCategory.name })
+  cy.env(['apiUrl']).then(({ apiUrl }) => {
+    cy.request('POST', `${apiUrl}/categories`, { name: data.newCategory.name })
+  })
 })
 
 // ❌ WRONG
 cy.request('POST', `${Cypress.env('apiUrl')}/categories`, { name: 'Tropical Plants' })
 ```
 
-### RULE 10 — Credentials and URLs come from `Cypress.env()` only
+### RULE 10 — Credentials and URLs come from Cypress environment variables only
 
 ```ts
 // ✅ CORRECT
-Cypress.env('apiUrl')
-Cypress.env('adminUser')
+cy.env(['apiUrl', 'adminUser']).then((env: any) => {
+  // Use env.apiUrl and env.adminUser here
+})
 
 // ❌ WRONG
 'http://localhost:3000/api'
@@ -275,11 +280,13 @@ let response: Cypress.Response<any>
 
 When('I send a GET request to {string}', function (endpoint: string) {
   cy.get('@token').then((token) => {
-    cy.request({
-      method: 'GET',
-      url: `${Cypress.env('apiUrl')}${endpoint}`,
-      headers: { Authorization: `Bearer ${token}` },
-    }).then((res) => { response = res })
+    cy.env(['apiUrl']).then(({ apiUrl }) => {
+      cy.request({
+        method: 'GET',
+        url: `${apiUrl}${endpoint}`,
+        headers: { Authorization: `Bearer ${token}` },
+      }).then((res) => { response = res })
+    })
   })
 })
 
@@ -460,20 +467,24 @@ Then('I should be redirected to {string}', (path: string) => {
 ```ts
 // cypress/support/commands.ts
 Cypress.Commands.add('loginAsAdmin', () => {
-  cy.request('POST', `${Cypress.env('apiUrl')}/auth/login`, {
-    email: Cypress.env('adminUser'),
-    password: Cypress.env('adminPass'),
-  }).then((res: Cypress.Response<{ token: string }>) => {
-    cy.wrap(res.body.token).as('token')
+  cy.env(['apiUrl', 'adminUser', 'adminPass']).then((env: any) => {
+    cy.request('POST', `${env.apiUrl}/auth/login`, {
+      username: env.adminUser,
+      password: env.adminPass,
+    }).then((res: Cypress.Response<any>) => {
+      cy.wrap(res.body.token).as('token')
+    })
   })
 })
 
 Cypress.Commands.add('loginAsUser', () => {
-  cy.request('POST', `${Cypress.env('apiUrl')}/auth/login`, {
-    email: Cypress.env('testUser'),
-    password: Cypress.env('testPass'),
-  }).then((res: Cypress.Response<{ token: string }>) => {
-    cy.wrap(res.body.token).as('token')
+  cy.env(['apiUrl', 'testUser', 'testPass']).then((env: any) => {
+    cy.request('POST', `${env.apiUrl}/auth/login`, {
+      username: env.testUser,
+      password: env.testPass,
+    }).then((res: Cypress.Response<any>) => {
+      cy.wrap(res.body.token).as('token')
+    })
   })
 })
 ```
@@ -571,8 +582,7 @@ npx cypress run --spec "cypress/e2e/features/api/admin/categories.feature"
 npx cypress open
 
 # Generate and open Allure report
-npx allure generate allure-results --clean -o allure-report
-npx allure open allure-report
+npm run allure
 ```
 
 ## Running Tests by Tags
