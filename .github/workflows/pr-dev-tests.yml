@@ -1,0 +1,87 @@
+name: Run Cypress Test Cases
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write      
+
+jobs:
+  cypress-tests:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start application stack
+        working-directory: application
+        run: docker compose up --build -d
+
+      - name: Wait for application
+        run: |
+          echo "Waiting for UI to become ready..."
+          for attempt in {1..30}; do
+            if curl -fsS http://localhost:8080/ui/login > /dev/null; then
+              echo "UI is ready!"
+              break
+            fi
+            echo "Waiting for UI... ($attempt/30)"
+            sleep 10
+          done
+
+          echo "Waiting for API to become ready..."
+          for attempt in {1..20}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://localhost:8080/api/health -H "Accept: */*")
+            # Accept 401 — these mean the API is up but rejected our dummy credentials (expected)
+            if [[ "$STATUS" == "200" || "$STATUS" == "401" ]]; then
+              echo "API is ready! (status: $STATUS)"
+              break
+            fi
+            echo "Waiting for API... ($attempt/20) [HTTP $STATUS]"
+            sleep 5
+          done
+
+      - name: Run Cypress tests
+        env:
+          CYPRESS_FRONTEND_URL: ${{ vars.CYPRESS_FRONTEND_URL }}
+          CYPRESS_API_URL: ${{ vars.CYPRESS_API_URL }}
+          CYPRESS_ADMIN_USER: ${{ secrets.CYPRESS_ADMIN_USER }}
+          CYPRESS_ADMIN_PASS: ${{ secrets.CYPRESS_ADMIN_PASS }}
+          CYPRESS_TEST_USER: ${{ secrets.CYPRESS_TEST_USER }}
+          CYPRESS_TEST_PASS: ${{ secrets.CYPRESS_TEST_PASS }}
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ vars.DB_NAME }}
+        run: npm test
+           
+      - name: Generate Allure Report
+        if: always()
+        run: npx allure awesome allure-results --single-file
+
+      - name: Run Allure Action
+        if: always()
+        uses: allure-framework/allure-action@v0
+        with:
+          report-directory: "./allure-report"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Stop application stack
+        if: always()
+        working-directory: application
+        run: docker compose down -v
