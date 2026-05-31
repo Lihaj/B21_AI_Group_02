@@ -29,6 +29,7 @@ services:
 
   app:
     build: .
+    image: qa-training-app:latest
     container_name: qa_training_app
     restart: unless-stopped
     ports:

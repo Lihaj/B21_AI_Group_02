@@ -11,8 +11,31 @@ permissions:
   checks: write      
 
 jobs:
-  cypress-tests:
+  build-image:
+    name: Build Application
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t qa-training-app:latest ./application
+
+      - name: Save Docker image
+        run: |
+          docker save -o qa-training-app.tar qa-training-app:latest
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-training-app
+          path: qa-training-app.tar
+          retention-days: 1
+
+  run-tests:
     name: Run Tests
+    needs: build-image
     runs-on: ubuntu-latest
 
     steps:
@@ -28,9 +51,19 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: qa-training-app
+          path: .
+
+      - name: Load Docker image
+        run: |
+          docker load -i qa-training-app.tar
+
       - name: Start application stack
         working-directory: application
-        run: docker compose up --build -d
+        run: docker compose up -d
 
       - name: Wait for application
         run: |
