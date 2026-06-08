@@ -19,5 +19,5 @@ Feature: Admin - Categories API
   @215523H @API_Category_Delete_001
   Scenario: Delete parent category with sub categories as Admin
     When I send a DELETE request to delete category with id "2"
-    Then the response status should be 500
+    Then the response status should be 400
     And the response body should contain the error message "Cannot delete category. Please delete sub-categories first"
