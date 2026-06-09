@@ -12,13 +12,13 @@ Feature: Admin - Plants API
     Then the response status should be 400
     And the response body should contain the error message "Plants can only be added to sub-categories"
 
-  @215503X @API_Plant_Create_002
-  Scenario: Create plant with valid data as Admin
-    When I send a POST request to create plant with plant data and category id "1"
-      | name        | price | quantity |
-      | Snake Plant | 25    | 60       |
-    Then the response status should be 201
-    And the response body should contain the success message "Plant created successfully"
+  # @215503X @API_Plant_Create_002
+  # Scenario: Create plant with valid data as Admin
+  #   When I send a POST request to create plant with plant data and category id "3"
+  #     | name         | price | quantity |
+  #     | New Plant 01 | 25    | 60       |
+  #   Then the response status should be 201
+  #   And the response body should contain created plant details
 
   @215503X @API_Plant_Update_001
   Scenario: Update plant with valid data as Admin

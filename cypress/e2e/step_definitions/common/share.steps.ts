@@ -17,6 +17,17 @@ Then('the response body should contain the success message {string}', (successMe
   })
 })
 
+Then('the response body should contain created plant details', () => {
+  cy.get('@response').its('body').then((body) => {
+    expect(body).to.be.an('object')
+    expect(body).to.have.property('id')
+    expect(body).to.have.property('name')
+    expect(body).to.have.property('price')
+    expect(body).to.have.property('quantity')
+    expect(body).to.have.property('category')
+  })
+})
+
 Then('the response body should contain updated plant details', () => {
   cy.get('@response').its('body').then((body) => {
     expect(body).to.be.an('object')
