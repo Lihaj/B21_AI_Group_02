@@ -42,6 +42,25 @@ When('I send a POST request to create category without category name', function 
   })
 })
 
+When('I send a DELETE request to delete the category from previous response', function () {
+  cy.get('@response').then((response) => {
+    const categoryId = response.body?.id
+    if (!categoryId) {
+      throw new Error('Created category id is missing from response body')
+    }
+    cy.get('@token').then((token) => {
+      cy.env(['apiUrl']).then(({ apiUrl }) => {
+        cy.request({
+          method: 'DELETE',
+          url: `${apiUrl}/categories/${categoryId}`,
+          headers: { Authorization: `Bearer ${token}` },
+          failOnStatusCode: false
+        }).as('response')
+      })
+    })
+  })
+})
+
 When('I send a PUT request to update category with id {string} and category name {string}', function (categoryId: string, categoryName: string) {
   cy.get('@token').then((token) => {
     cy.env(['apiUrl']).then(({ apiUrl }) => {
