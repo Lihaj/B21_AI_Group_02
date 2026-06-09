@@ -39,3 +39,9 @@ Feature: Admin - Categories API
     Then the response status should be 201
     When I send a DELETE request to delete the category from previous response
     Then the response status should be 204
+
+  @215566P @API_Category_Delete_004
+  Scenario: Delete a non-existing category as Admin
+    When I send a DELETE request to delete category with id "-1"
+    Then the response status should be 404
+    And the response body should contain the error message "Category not found"
