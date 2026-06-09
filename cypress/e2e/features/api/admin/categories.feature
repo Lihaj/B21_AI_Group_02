@@ -10,6 +10,11 @@ Feature: Admin - Categories API
     Then the response status should be 400
     And the response body should contain the error message "Category name must be between 3 and 10 characters"
 
+  @215566P @API_Category_Create_002
+  Scenario: Create a category with valid data as Admin
+    When I send a POST request to create category with category name "Gardner"
+    Then the response status should be 201
+
   @215523H @API_Category_Update_001
   Scenario: Update category with valid data as Admin
     When I send a PUT request to update category with id "1" and category name "UpdatedCat"

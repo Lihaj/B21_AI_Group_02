@@ -28,7 +28,6 @@ When('I send a POST request to create category with category name {string}', fun
   })
 })
 
-
 When('I send a PUT request to update category with id {string} and category name {string}', function (categoryId: string, categoryName: string) {
   cy.get('@token').then((token) => {
     cy.env(['apiUrl']).then(({ apiUrl }) => {
