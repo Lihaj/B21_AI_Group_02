@@ -27,6 +27,12 @@ Feature: Admin - Categories API
     Then the response status should be 200
     And the retrieved category with id "1" should have the name "UpdatedCat"
 
+  @215566P @API_Category_Update_003
+  Scenario: Update a non-existing category as Admin
+    When I send a PUT request to update category with id "9999" and category name "Update"
+    Then the response status should be 404
+    And the response body should contain the error message "Category not found"
+
   @215523H @API_Category_Delete_001
   Scenario: Delete parent category with sub categories as Admin
     When I send a DELETE request to delete category with id "2"
