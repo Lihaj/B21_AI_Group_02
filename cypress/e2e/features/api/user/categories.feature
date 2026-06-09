@@ -10,6 +10,11 @@ Feature: User - Categories API
     Then the response status should be 200
     And the retrieved category with id "5" should have the name "Foliage"
 
+  @215566P @API_Category_Read_002
+  Scenario: Search categories by name as normal user
+    When I send a GET request to search categories by name "Foliage"
+    Then the response status should be 200
+
   @215566P @API_Category_Delete_003
   Scenario: Delete a category as a normal user 
     When I send a DELETE request to delete category with id "1"

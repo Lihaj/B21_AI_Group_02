@@ -103,3 +103,16 @@ When('I send a GET request to view category with id {string}', (categoryId: stri
     })
   })
 })
+
+When('I send a GET request to search categories by name {string}', (categoryName: string) => {
+  cy.get('@token').then((token) => {
+    cy.env(['apiUrl']).then(({ apiUrl }) => {
+      cy.request({
+        method: 'GET',
+        url: `${apiUrl}/categories?name=${encodeURIComponent(categoryName)}`,
+        headers: { Authorization: `Bearer ${token}` },
+        failOnStatusCode: false
+      }).as('response')
+    })
+  })
+})
