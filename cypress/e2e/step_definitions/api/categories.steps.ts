@@ -28,6 +28,20 @@ When('I send a POST request to create category with category name {string}', fun
   })
 })
 
+When('I send a POST request to create category without category name', function () {
+  cy.get('@token').then((token) => {
+    cy.env(['apiUrl']).then(({ apiUrl }) => {
+      cy.request({
+        method: 'POST',
+        url: `${apiUrl}/categories`,
+        headers: { Authorization: `Bearer ${token}` },
+        body: {},
+        failOnStatusCode: false
+      }).as('response')
+    })
+  })
+})
+
 When('I send a PUT request to update category with id {string} and category name {string}', function (categoryId: string, categoryName: string) {
   cy.get('@token').then((token) => {
     cy.env(['apiUrl']).then(({ apiUrl }) => {

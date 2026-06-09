@@ -15,6 +15,12 @@ Feature: Admin - Categories API
     When I send a POST request to create category with category name "Gardner"
     Then the response status should be 201
 
+  @215566P @API_Category_Create_003
+  Scenario: Create a category without a name as Admin
+    When I send a POST request to create category without category name
+    Then the response status should be 400
+    And the response body should contain the error message "Category name is mandatory"
+
   @215523H @API_Category_Update_001
   Scenario: Update category with valid data as Admin
     When I send a PUT request to update category with id "1" and category name "UpdatedCat"
