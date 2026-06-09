@@ -20,13 +20,20 @@ Feature: User - Categories API
     When I send a GET request to filter categories by parent id "1"
     Then the response status should be 200
 
+  @215566P @API_Category_Update_002
+  Scenario: Update a category as a normal user and verify forbidden access
+    When I send a PUT request to update category with id "1" and category name "Foliage"
+    Then the response status should be 403
+    And the response body should contain the error message "Forbidden"
+
   @215566P @API_Category_Delete_003
-  Scenario: Delete a category as a normal user 
+  Scenario: Delete a category as a normal user and verify forbidden access
     When I send a DELETE request to delete category with id "1"
     Then the response status should be 403
     And the response body should contain the error message "Forbidden"
 
   @215566P @API_Category_Create_004
-  Scenario: Create a category as a normal user
-    When I send a POST request to create category with category name "tess"
+  Scenario: Create a category as a normal user and verify forbidden access
+    When I send a POST request to create category with category name "rose"
     Then the response status should be 403
+    And the response body should contain the error message "Forbidden"
