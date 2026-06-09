@@ -15,6 +15,11 @@ Feature: User - Categories API
     When I send a GET request to search categories by name "Foliage"
     Then the response status should be 200
 
+  @215566P @API_Category_Read_003
+  Scenario: Filter categories by parent category as normal user
+    When I send a GET request to filter categories by parent id "1"
+    Then the response status should be 200
+
   @215566P @API_Category_Delete_003
   Scenario: Delete a category as a normal user 
     When I send a DELETE request to delete category with id "1"

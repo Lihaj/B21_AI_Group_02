@@ -116,3 +116,16 @@ When('I send a GET request to search categories by name {string}', (categoryName
     })
   })
 })
+
+When('I send a GET request to filter categories by parent id {string}', (parentId: string) => {
+  cy.get('@token').then((token) => {
+    cy.env(['apiUrl']).then(({ apiUrl }) => {
+      cy.request({
+        method: 'GET',
+        url: `${apiUrl}/categories?parentId=${parentId}`,
+        headers: { Authorization: `Bearer ${token}` },
+        failOnStatusCode: false
+      }).as('response')
+    })
+  })
+})
