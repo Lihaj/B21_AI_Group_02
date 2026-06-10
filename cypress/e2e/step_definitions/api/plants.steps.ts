@@ -2,28 +2,30 @@
 import { DataTable, Given, Then, When } from '@badeball/cypress-cucumber-preprocessor'
 
 Given('at least one plant exists', function () {
-	cy.get('@token').then((token) => {
-		cy.env(['apiUrl']).then(({ apiUrl }) => {
-			cy.request({
-				method: 'GET',
-				url: `${apiUrl}/plants`,
-				headers: { Authorization: `Bearer ${token}` },
-				failOnStatusCode: false
-			}).then((response) => {
-				if (Array.isArray(response.body) && response.body.length > 0) {
-					return
-				}
+	cy.loginAsAdmin().then(() => {
+		cy.get('@token').then((token) => {
+			cy.env(['apiUrl']).then(({ apiUrl }) => {
 				cy.request({
-					method: 'POST',
-					url: `${apiUrl}/plants/category/1`,
+					method: 'GET',
+					url: `${apiUrl}/plants`,
 					headers: { Authorization: `Bearer ${token}` },
-					body: {
-						name: 'Test Plant',
-						price: 10,
-						quantity: 10
-					},
 					failOnStatusCode: false
-				}).as('response')
+				}).then((response) => {
+					if (Array.isArray(response.body) && response.body.length > 0) {
+						return
+					}
+					cy.request({
+						method: 'POST',
+						url: `${apiUrl}/plants/category/1`,
+						headers: { Authorization: `Bearer ${token}` },
+						body: {
+							name: 'Test Plant',
+							price: 10,
+							quantity: 10
+						},
+						failOnStatusCode: false
+					}).as('response')
+				})
 			})
 		})
 	})

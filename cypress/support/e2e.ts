@@ -1,6 +1,6 @@
 import 'allure-cypress';
 import './commands';
 
-before(() => {
+beforeEach(() => {
   cy.seedDatabase();
 });
