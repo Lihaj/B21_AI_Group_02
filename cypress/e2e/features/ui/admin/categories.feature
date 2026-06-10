@@ -9,7 +9,7 @@ Feature: Admin - Categories UI
     When I navigate to the categories page
     Then I should see the "Add A Category" button in the page header
 
-  @UI_Category_Create_002
+  @215523H @UI_Category_Create_002
   Scenario: Admin sees Category Name validation when saving empty category form
     When I navigate to the categories add page
     And I click on the "Save" button on the category form
