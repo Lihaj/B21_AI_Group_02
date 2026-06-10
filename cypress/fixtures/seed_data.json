@@ -6,7 +6,15 @@
     { "name": "Ferns", "parent_id": 1 },
     { "name": "Foliage", "parent_id": 1 },
     { "name": "Shrubs", "parent_id": 2 },
-    { "name": "Flowering", "parent_id": 2 }
+    { "name": "Flowering", "parent_id": 2 },
+    { "name": "Herbs", "parent_id": 1 },
+    { "name": "Cacti", "parent_id": 3 },
+    { "name": "Palms", "parent_id": 2 },
+    { "name": "Grasses", "parent_id": 2 },
+    { "name": "Climbers", "parent_id": 1 },
+    { "name": "Bulbs", "parent_id": 7 },
+    { "name": "Orchids", "parent_id": 1 },
+    { "name": "Fruits", "parent_id": 2 }
   ],
   "plants": [
     { "name": "Aloe Vera", "price": 15.5, "quantity": 100, "category_id": 3 },

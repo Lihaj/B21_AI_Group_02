@@ -24,3 +24,31 @@ Then('I should stay on the categories add page', () => {
 Then('I should see the Category Name validation messages', () => {
   categoryPage.checkCategoryNameValidationMessages();
 });
+
+When('I observe the category list', () => {
+  categoryPage.checkCategoryTableVisible();
+});
+
+When('I scroll to the bottom of the page', () => {
+  categoryPage.scrollToBottom();
+});
+
+Then('I should see pagination controls', () => {
+  categoryPage.checkPaginationVisible();
+});
+
+When('I navigate to the next page', function () {
+  // capture first row text to verify page change
+  categoryPage.getFirstRowText().then((text) => {
+    cy.wrap(text).as('firstRowText');
+  }).then(() => {
+    categoryPage.goToNextPage();
+  });
+});
+
+Then('the category list should update to the next page', function () {
+  cy.get('@firstRowText').then((prevText: string) => {
+    // wait for possible navigation
+    cy.get('table').find('tbody tr').first().invoke('text').should('not.eq', prevText);
+  });
+});
