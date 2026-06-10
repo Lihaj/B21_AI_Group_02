@@ -198,28 +198,28 @@ Then('the plant list should be empty', () => {
 })
 
 Then('the response body should contain created plant details', () => {
-	cy.get('@response').its('body').then((body) => {
-		expect(body).to.be.an('object')
-		expect(body).to.have.property('id')
-		expect(body).to.have.property('name')
-		expect(body).to.have.property('price')
-		expect(body).to.have.property('quantity')
-		expect(body).to.have.property('category')
-	})
+  cy.get('@response').its('body').then((body) => {
+    expect(body).to.be.an('object')
+    expect(body).to.have.property('id')
+    expect(body).to.have.property('name')
+    expect(body).to.have.property('price')
+    expect(body).to.have.property('quantity')
+    expect(body).to.have.property('category')
+  })
 })
 
 Then('the response body should contain updated plant details', () => {
-	cy.get('@response').its('body').then((body) => {
-		expect(body).to.be.an('object')
-		expect(body).to.have.property('name')
-		expect(body).to.have.property('price')
-		expect(body).to.have.property('quantity')
-	})
+  cy.get('@response').its('body').then((body) => {
+    expect(body).to.be.an('object')
+    expect(body).to.have.property('name')
+    expect(body).to.have.property('price')
+    expect(body).to.have.property('quantity')
+  })
 })
 
 Then('the response body should contain a non-empty plant list', () => {
-	cy.get('@response').its('body').then((body) => {
-		expect(body).to.be.an('array')
-		expect(body.length).to.be.greaterThan(0)
-	})
+  cy.get('@response').its('body').then((body) => {
+    expect(body).to.be.an('array')
+    expect(body.length).to.be.greaterThan(0)
+  })
 })
