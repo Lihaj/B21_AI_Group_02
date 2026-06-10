@@ -82,54 +82,115 @@ When('I send a POST request to create plant with plant data and category id {str
 					quantity: Number(plantData.quantity)
 				},
 				failOnStatusCode: false
-			}).as('response')
+			}).as('response').then((resp) => {
+				if (resp.status === 201) {
+					cy.wrap(resp.body.id).as('createdPlantId')
+				}
+			})
 		})
 	})
 })
 
 When('I send a PUT request to update plant with id {string} with plant data', function (plantId: string, dataTable: DataTable) {
-	cy.get('@token').then((token) => {
-		cy.env(['apiUrl']).then(({ apiUrl }) => {
-			const plantData = dataTable.hashes()[0]
-			cy.request({
-				method: 'PUT',
-				url: `${apiUrl}/plants/${plantId}`,
-				headers: { Authorization: `Bearer ${token}` },
-				body: {
-					name: plantData.name,
-					price: Number(plantData.price),
-					quantity: Number(plantData.quantity)
-				},
-				failOnStatusCode: false
-			}).as('response')
+	let idToUpdate = plantId
+	if (plantId === 'createdPlantId') {
+		cy.get('@createdPlantId').then((id) => {
+			idToUpdate = String(id)
+			cy.get('@token').then((token) => {
+				cy.env(['apiUrl']).then(({ apiUrl }) => {
+					const plantData = dataTable.hashes()[0]
+					cy.request({
+						method: 'PUT',
+						url: `${apiUrl}/plants/${idToUpdate}`,
+						headers: { Authorization: `Bearer ${token}` },
+						body: {
+							name: plantData.name,
+							price: Number(plantData.price),
+							quantity: Number(plantData.quantity)
+						},
+						failOnStatusCode: false
+					}).as('response')
+				})
+			})
 		})
-	})
+	} else {
+		cy.get('@token').then((token) => {
+			cy.env(['apiUrl']).then(({ apiUrl }) => {
+				const plantData = dataTable.hashes()[0]
+				cy.request({
+					method: 'PUT',
+					url: `${apiUrl}/plants/${plantId}`,
+					headers: { Authorization: `Bearer ${token}` },
+					body: {
+						name: plantData.name,
+						price: Number(plantData.price),
+						quantity: Number(plantData.quantity)
+					},
+					failOnStatusCode: false
+				}).as('response')
+			})
+		})
+	}
 })
 
 When('I send a DELETE request to delete plant with id {string}', function (plantId: string) {
-	cy.get('@token').then((token) => {
-		cy.env(['apiUrl']).then(({ apiUrl }) => {
-			cy.request({
-				method: 'DELETE',
-				url: `${apiUrl}/plants/${plantId}`,
-				headers: { Authorization: `Bearer ${token}` },
-				failOnStatusCode: false
-			}).as('response')
+	let idToDelete = plantId
+	if (plantId === 'createdPlantId') {
+		cy.get('@createdPlantId').then((id) => {
+			idToDelete = String(id)
+			cy.get('@token').then((token) => {
+				cy.env(['apiUrl']).then(({ apiUrl }) => {
+					cy.request({
+						method: 'DELETE',
+						url: `${apiUrl}/plants/${idToDelete}`,
+						headers: { Authorization: `Bearer ${token}` },
+						failOnStatusCode: false
+					}).as('response')
+				})
+			})
 		})
-	})
+	} else {
+		cy.get('@token').then((token) => {
+			cy.env(['apiUrl']).then(({ apiUrl }) => {
+				cy.request({
+					method: 'DELETE',
+					url: `${apiUrl}/plants/${plantId}`,
+					headers: { Authorization: `Bearer ${token}` },
+					failOnStatusCode: false
+				}).as('response')
+			})
+		})
+	}
 })
 
 Then('the plant with id {string} should not exist', function (plantId: string) {
-	cy.get('@token').then((token) => {
-		cy.env(['apiUrl']).then(({ apiUrl }) => {
-			cy.request({
-				method: 'GET',
-				url: `${apiUrl}/plants/${plantId}`,
-				headers: { Authorization: `Bearer ${token}` },
-				failOnStatusCode: false
-			}).its('status').should('eq', 404)
+	let idToCheck = plantId
+	if (plantId === 'createdPlantId') {
+		cy.get('@createdPlantId').then((id) => {
+			idToCheck = String(id)
+			cy.get('@token').then((token) => {
+				cy.env(['apiUrl']).then(({ apiUrl }) => {
+					cy.request({
+						method: 'GET',
+						url: `${apiUrl}/plants/${idToCheck}`,
+						headers: { Authorization: `Bearer ${token}` },
+						failOnStatusCode: false
+					}).its('status').should('eq', 404)
+				})
+			})
 		})
-	})
+	} else {
+		cy.get('@token').then((token) => {
+			cy.env(['apiUrl']).then(({ apiUrl }) => {
+				cy.request({
+					method: 'GET',
+					url: `${apiUrl}/plants/${plantId}`,
+					headers: { Authorization: `Bearer ${token}` },
+					failOnStatusCode: false
+				}).its('status').should('eq', 404)
+			})
+		})
+	}
 })
 
 Then('the plant list should be empty', () => {
