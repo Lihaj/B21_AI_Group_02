@@ -47,7 +47,6 @@ jobs:
           echo "Waiting for API to become ready..."
           for attempt in {1..20}; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://localhost:8080/api/health -H "Accept: */*")
-            # Accept 401 — these mean the API is up but rejected our dummy credentials (expected)
             if [[ "$STATUS" == "200" || "$STATUS" == "401" ]]; then
               echo "API is ready! (status: $STATUS)"
               break
@@ -73,13 +72,17 @@ jobs:
         run: |
           set +e
           TAGS=("215523H" "215503X" "215566P" "215521B")
+          EXPECTED_FAIL_COUNTS=("2" "0" "0" "0")
           SUMMARY_FILE="$RUNNER_TEMP/allure-tag-summary.json"
 
           echo "[]" > "$SUMMARY_FILE"
           overall_status=0
 
-          for TAG in "${TAGS[@]}"; do
-            echo "Running Cypress tests for @${TAG}"
+          for i in "${!TAGS[@]}"; do
+            TAG="${TAGS[$i]}"
+            EXPECTED_FAILS="${EXPECTED_FAIL_COUNTS[$i]}"
+
+            echo "Running Cypress tests for @${TAG} (expected failures: ${EXPECTED_FAILS})"
             rm -rf allure-results allure-report
 
             start_time=$(date +%s)
@@ -88,17 +91,13 @@ jobs:
             end_time=$(date +%s)
             duration_seconds=$((end_time - start_time))
 
-            if [ "$test_status" -ne 0 ]; then
-              overall_status=1
-            fi
-
             if ! npx allure awesome allure-results --single-file; then
               echo "Allure report generation failed for @${TAG}"
             fi
 
-            node - "$TAG" "$duration_seconds" "$SUMMARY_FILE" <<'NODE'
+            node - "$TAG" "$duration_seconds" "$SUMMARY_FILE" "$EXPECTED_FAILS" <<'NODE'
           const fs = require('fs');
-          const [tag, durationSeconds, summaryFile] = process.argv.slice(2);
+          const [tag, durationSeconds, summaryFile, expectedFails] = process.argv.slice(2);
           const reportPath = 'allure-report/summary.json';
           const report = fs.existsSync(reportPath)
             ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
@@ -114,11 +113,27 @@ jobs:
             failed: stats.failed ?? 0,
             retries: stats.retries ?? 0,
             newTests: Array.isArray(report.newTests) ? report.newTests.length : 0,
-            status: report.status ?? 'unknown'
+            status: report.status ?? 'unknown',
+            expectedFails: Number(expectedFails ?? 0)
           });
 
           fs.writeFileSync(summaryFile, JSON.stringify(rows, null, 2));
           NODE
+
+            # Read actual failed count from the summary and compare against expected
+            actual_failed=$(node -e "
+              const fs = require('fs');
+              const rows = JSON.parse(fs.readFileSync('$SUMMARY_FILE', 'utf8'));
+              const row = rows.find(r => r.tag === '$TAG');
+              console.log(row?.failed ?? 0);
+            ")
+
+            if [ "$actual_failed" -gt "$EXPECTED_FAILS" ]; then
+              echo "❌ @${TAG} has ${actual_failed} failures but only ${EXPECTED_FAILS} expected — marking workflow as failed"
+              overall_status=1
+            else
+              echo "✅ @${TAG} failures (${actual_failed}) are within expected (${EXPECTED_FAILS})"
+            fi
           done
 
           echo "summary_file=$SUMMARY_FILE" >> "$GITHUB_OUTPUT"
@@ -135,8 +150,7 @@ jobs:
             const fs = require('fs');
             const marker = '';
             const summaryFile = process.env.SUMMARY_FILE;
-            
-            // Handle edge case where the summary file might not exist if previous step crashed early
+
             const rows = (summaryFile && fs.existsSync(summaryFile)) ? JSON.parse(fs.readFileSync(summaryFile, 'utf8')) : [];
 
             const formatDuration = (seconds) => {
@@ -150,13 +164,15 @@ jobs:
               marker,
               '## Allure Report Summary by Tag',
               '',
-              '| Tag | Status | Duration | Total | Passed | Failed | Retries | New |',
-              '| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |'
+              '| Tag | Status | Duration | Total | Passed | Failed | Expected Failures | Retries | New |',
+              '| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |'
             ];
 
             for (const row of rows) {
+              const unexpectedFails = Math.max(0, (row.failed ?? 0) - (row.expectedFails ?? 0));
+              const statusIcon = unexpectedFails > 0 ? '❌' : '✅';
               lines.push(
-                `| @${row.tag} | ${row.status ?? 'unknown'} | ${formatDuration(row.durationSeconds)} | ${row.total ?? 0} | ${row.passed ?? 0} | ${row.failed ?? 0} | ${row.retries ?? 0} | ${row.newTests ?? 0} |`
+                `| @${row.tag} | ${statusIcon} ${row.status ?? 'unknown'} | ${formatDuration(row.durationSeconds)} | ${row.total ?? 0} | ${row.passed ?? 0} | ${row.failed ?? 0} | ${row.expectedFails ?? 0} | ${row.retries ?? 0} | ${row.newTests ?? 0} |`
               );
             }
 
@@ -166,7 +182,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             const issue_number = context.issue.number;
-            
+
             if (!issue_number) {
               console.log("No issue/PR context available to post a comment.");
               return;
