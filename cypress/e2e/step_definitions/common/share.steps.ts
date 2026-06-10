@@ -10,3 +10,9 @@ Then('the response body should contain the error message {string}', (errorMessag
     expect(JSON.stringify(body)).to.include(errorMessage)
   })
 })
+
+Then('the response body should contain the success message {string}', (successMessage: string) => {
+  cy.get('@response').its('body').then((body) => {
+    expect(JSON.stringify(body)).to.include(successMessage)
+  })
+})
