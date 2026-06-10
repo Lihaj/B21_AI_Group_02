@@ -30,9 +30,10 @@ Feature: Admin - Sales UI
     Then I should see the quantity validation message
 
   @215521B @UI_Sales_Cancel_001
-  Scenario: Admin is redirected back to sales list when cancel is clicked on sales page
+  Scenario: Admin is redirected back to sales list when cancel is clicked on sell plant page
     When I navigate to the sales page
-    And I click on the cancel link on the sales page
+    And I click on the "Sell Plant" button on the sales page
+    And I click on the cancel link on the sell plant page
     Then I should be on the sales list page
 
   @215521B @UI_Sales_Cancel_002
