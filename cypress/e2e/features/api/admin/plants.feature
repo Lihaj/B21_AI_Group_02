@@ -22,7 +22,7 @@ Feature: Admin - Plants API
 
   @215503X @API_Plant_Update_001
   Scenario: Update plant with valid data as Admin
-    When I send a POST request to create plant with plant data and category id "3"
+    Given I send a POST request to create plant with plant data and category id "3"
       | name            | price | quantity |
       | Plant to Update | 20    | 50       |
     When I send a PUT request to update plant with id "createdPlantId" with plant data
@@ -65,8 +65,8 @@ Feature: Admin - Plants API
 
   @215503X @API_Plant_Delete_001
   Scenario: Delete existing plant as Admin
-    When I send a POST request to create plant with plant data and category id "3"
-      | name          | price | quantity |
+    Given I send a POST request to create plant with plant data and category id "3"
+      | name            | price | quantity |
       | Plant to Delete | 15    | 40       |
     When I send a DELETE request to delete plant with id "createdPlantId"
     Then the response status should be 204
