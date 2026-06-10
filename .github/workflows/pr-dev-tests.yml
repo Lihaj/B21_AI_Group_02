@@ -47,7 +47,6 @@ jobs:
           echo "Waiting for API to become ready..."
           for attempt in {1..20}; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://localhost:8080/api/health -H "Accept: */*")
-            # Accept 401 — these mean the API is up but rejected our dummy credentials (expected)
             if [[ "$STATUS" == "200" || "$STATUS" == "401" ]]; then
               echo "API is ready! (status: $STATUS)"
               break
@@ -56,7 +55,8 @@ jobs:
             sleep 5
           done
 
-      - name: Run Cypress tests
+      - name: Run Cypress tests and collect summaries
+        id: collect-summaries
         env:
           CYPRESS_FRONTEND_URL: ${{ vars.CYPRESS_FRONTEND_URL }}
           CYPRESS_API_URL: ${{ vars.CYPRESS_API_URL }}
@@ -68,18 +68,148 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ vars.DB_NAME }}
-        run: npm test
-           
-      - name: Generate Allure Report
-        if: always()
-        run: npx allure awesome allure-results --single-file
+        shell: bash
+        run: |
+          set +e
+          TAGS=("215523H" "215503X" "215566P" "215521B")
+          EXPECTED_FAIL_COUNTS=("2" "0" "0" "0")
+          SUMMARY_FILE="$RUNNER_TEMP/allure-tag-summary.json"
 
-      - name: Run Allure Action
+          echo "[]" > "$SUMMARY_FILE"
+          overall_status=0
+
+          for i in "${!TAGS[@]}"; do
+            TAG="${TAGS[$i]}"
+            EXPECTED_FAILS="${EXPECTED_FAIL_COUNTS[$i]}"
+
+            echo "Running Cypress tests for @${TAG} (expected failures: ${EXPECTED_FAILS})"
+            rm -rf allure-results allure-report
+
+            start_time=$(date +%s)
+            npm test -- --env TAGS="@${TAG}"
+            test_status=$?
+            end_time=$(date +%s)
+            duration_seconds=$((end_time - start_time))
+
+            if ! npx allure awesome allure-results --single-file; then
+              echo "Allure report generation failed for @${TAG}"
+            fi
+
+            node - "$TAG" "$duration_seconds" "$SUMMARY_FILE" "$EXPECTED_FAILS" <<'NODE'
+          const fs = require('fs');
+          const [tag, durationSeconds, summaryFile, expectedFails] = process.argv.slice(2);
+          const reportPath = 'allure-report/summary.json';
+          const report = fs.existsSync(reportPath)
+            ? JSON.parse(fs.readFileSync(reportPath, 'utf8'))
+            : { stats: {}, status: 'unknown', newTests: [] };
+          const stats = report.stats || {};
+          const rows = JSON.parse(fs.readFileSync(summaryFile, 'utf8'));
+
+          rows.push({
+            tag,
+            durationSeconds: Number(durationSeconds),
+            total: stats.total ?? 0,
+            passed: stats.passed ?? 0,
+            failed: stats.failed ?? 0,
+            retries: stats.retries ?? 0,
+            newTests: Array.isArray(report.newTests) ? report.newTests.length : 0,
+            status: report.status ?? 'unknown',
+            expectedFails: Number(expectedFails ?? 0)
+          });
+
+          fs.writeFileSync(summaryFile, JSON.stringify(rows, null, 2));
+          NODE
+
+            # Read actual failed count from the summary and compare against expected
+            actual_failed=$(node -e "
+              const fs = require('fs');
+              const rows = JSON.parse(fs.readFileSync('$SUMMARY_FILE', 'utf8'));
+              const row = rows.find(r => r.tag === '$TAG');
+              console.log(row?.failed ?? 0);
+            ")
+
+            if [ "$actual_failed" -gt "$EXPECTED_FAILS" ]; then
+              echo "❌ @${TAG} has ${actual_failed} failures but only ${EXPECTED_FAILS} expected — marking workflow as failed"
+              overall_status=1
+            else
+              echo "✅ @${TAG} failures (${actual_failed}) are within expected (${EXPECTED_FAILS})"
+            fi
+          done
+
+          echo "summary_file=$SUMMARY_FILE" >> "$GITHUB_OUTPUT"
+          exit "$overall_status"
+
+      - name: Publish divided Allure summary
         if: always()
-        uses: allure-framework/allure-action@v0
+        uses: actions/github-script@v7
+        env:
+          SUMMARY_FILE: ${{ steps.collect-summaries.outputs.summary_file }}
         with:
-          report-directory: "./allure-report"
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const marker = '';
+            const summaryFile = process.env.SUMMARY_FILE;
+
+            const rows = (summaryFile && fs.existsSync(summaryFile)) ? JSON.parse(fs.readFileSync(summaryFile, 'utf8')) : [];
+
+            const formatDuration = (seconds) => {
+              const totalSeconds = Math.max(0, Number(seconds) || 0);
+              const minutes = Math.floor(totalSeconds / 60);
+              const remainingSeconds = totalSeconds % 60;
+              return `${minutes}m ${remainingSeconds}s`;
+            };
+
+            const lines = [
+              marker,
+              '## Allure Report Summary by Tag',
+              '',
+              '| Tag | Status | Duration | Total | Passed | Failed | Expected Failures | Retries | New |',
+              '| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |'
+            ];
+
+            for (const row of rows) {
+              const unexpectedFails = Math.max(0, (row.failed ?? 0) - (row.expectedFails ?? 0));
+              const statusIcon = unexpectedFails > 0 ? '❌' : '✅';
+              lines.push(
+                `| @${row.tag} | ${statusIcon} ${row.status ?? 'unknown'} | ${formatDuration(row.durationSeconds)} | ${row.total ?? 0} | ${row.passed ?? 0} | ${row.failed ?? 0} | ${row.expectedFails ?? 0} | ${row.retries ?? 0} | ${row.newTests ?? 0} |`
+              );
+            }
+
+            lines.push('', 'Each row comes from one Cypress run filtered to the matching tag.');
+
+            const body = lines.join('\n');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.issue.number;
+
+            if (!issue_number) {
+              console.log("No issue/PR context available to post a comment.");
+              return;
+            }
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number
+            });
+            const existing = comments.find((comment) => comment.body?.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number,
+                body
+              });
+            }
 
       - name: Stop application stack
         if: always()

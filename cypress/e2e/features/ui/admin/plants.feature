@@ -4,7 +4,7 @@ Feature: Admin - Plants UI
   Background:
     Given User is login as admin
 
-  @UI_Plant_Update_002
+  @215523H @UI_Plant_Update_002
   Scenario: Admin sees price validation when updating plant with negative price
     When I navigate to the plant edit page for plant id "3" with the following plant data:
       | name  | price | quantity |

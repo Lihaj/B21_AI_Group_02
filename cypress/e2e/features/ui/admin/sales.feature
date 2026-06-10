@@ -4,6 +4,13 @@ Feature: Admin - Sales UI
   Background:
     Given User is login as admin
 
+  @215523H @UI_Sales_Delete_001
+  Scenario: Admin sees a confirmation before deleting a sale
+    When I navigate to the sales page
+    And I click on the first delete button on the sales page
+    Then I should see the sale delete confirmation prompt
+    And I should stay on the sales page
+
   @215521B @UI_Sales_Create_001 @TC_UI_SALES_01
   Scenario: Admin can create a sale successfully and stock is reduced
     When I navigate to the sales page
@@ -27,13 +34,6 @@ Feature: Admin - Sales UI
     When I navigate to the sales page
     And I click on the cancel link on the sales page
     Then I should be on the sales list page
-
-  @215521B @UI_Sales_Delete_001 @TC_UI_SALES_05
-  Scenario: Admin sees a confirmation before deleting a sale and item is deleted on confirm
-    When I navigate to the sales page
-    And I click on the first delete button on the sales page
-    Then I should see the sale delete confirmation prompt
-    And I should stay on the sales page
 
   @215521B @UI_Sales_Cancel_002 @TC_UI_SALES_06
   Scenario: Admin is redirected back to sales list when cancel is clicked on sell plant page
