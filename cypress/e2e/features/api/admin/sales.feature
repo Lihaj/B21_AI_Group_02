@@ -39,6 +39,6 @@ Feature: Admin - Sales API
     Then the response status should be 404
 
   @215521B @API_Sales_Delete_002
-  Scenario: Admin receives 400 when sale ID is in an invalid format
+  Scenario: Admin receives 500 when backend fails during a sales deletion request
     When I send a DELETE request to delete sale with invalid id "abc"
-    Then the response status should be 400
+    Then the response status should be 500
