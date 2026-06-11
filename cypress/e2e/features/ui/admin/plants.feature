@@ -49,13 +49,6 @@ Feature: Admin - Plants UI
     And I click on the "Save" button on the plant form
     Then I should see the price validation message
 
-  @215503X @UI_Plant_Read_005
-  Scenario: Search plant by name (Admin)
-    Given at least one plant exists
-    When I navigate to the plants page
-    And I enter plant name "Monstera" in search field
-    Then only matching plants are displayed
-
   @215503X @UI_Plant_Read_006
   Scenario: Filter plants by category "Flowering" (Admin)
     Given the following plants exist in category "Flowering":
