@@ -3,13 +3,13 @@ import salesPage from '../../../support/pages/SalesPage';
 
 // ── Hooks for empty-state test ────────────────────────────────────────────────
 
-// Before @UI_Sales_Empty_001: wipe sales so the empty-state message is visible
-Before({ tags: '@UI_Sales_Empty_001' }, () => {
+// Before @UI_Sales_Read_006: wipe sales so the empty-state message is visible
+Before({ tags: '@UI_Sales_Read_006' }, () => {
 	cy.task('queryDb', 'DELETE FROM sales');
 });
 
-// After @UI_Sales_Empty_001: re-seed sales so subsequent tests are not affected
-After({ tags: '@UI_Sales_Empty_001' }, () => {
+// After @UI_Sales_Read_006: re-seed sales so subsequent tests are not affected
+After({ tags: '@UI_Sales_Read_006' }, () => {
 	cy.fixture('seed_data').then((data: any) => {
 		data.sales.forEach((sale: any, index: number) => {
 			const id = index + 1;
