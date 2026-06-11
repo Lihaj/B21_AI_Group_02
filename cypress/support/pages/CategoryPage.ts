@@ -27,6 +27,21 @@
     cy.location('pathname').should('eq', '/ui/categories/add');
   }
 
+  clickAdd() {
+    this.addButton.click();
+  }
+
+  enterCategoryFormName(name: string) {
+    cy.get('input#name').clear().type(name);
+  }
+
+  checkSuccessMessage(message = 'Category created successfully') {
+    cy.get('body')
+      .find('.alert-success, .alert, .toast, .notification, .message')
+      .contains(/Category created successfully/i)
+      .should('be.visible');
+  }
+
   checkCategoryNameValidationMessages() {
     cy.contains('Category name must be between 3 and 10 characters').should('be.visible');
     cy.contains('Category name is required').should('be.visible');

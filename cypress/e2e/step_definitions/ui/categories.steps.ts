@@ -9,6 +9,10 @@ When('I navigate to the categories add page', () => {
   categoryPage.visitAdd();
 });
 
+When('I click the "Add A Category" button', () => {
+  categoryPage.clickAdd();
+});
+
 When('I click on the "Save" button on the category form', () => {
   categoryPage.clickSave();
 });
@@ -29,6 +33,10 @@ When('I enter {string} in the category search box', (categoryName: string) => {
   categoryPage.enterSearchCategoryName(categoryName);
 });
 
+When('I enter {string} in the category name field', (categoryName: string) => {
+  categoryPage.enterCategoryFormName(categoryName);
+});
+
 When('I click the Search button', () => {
   categoryPage.clickSearch();
 });
@@ -43,6 +51,14 @@ When('I click the Reset button', () => {
 
 Then('I should see matching categories for {string}', (categoryName: string) => {
   categoryPage.checkMatchingCategoryPresent(categoryName);
+});
+
+Then('I should see the Category created successfully message', () => {
+  categoryPage.checkSuccessMessage();
+});
+
+Then('I should be redirected to the categories page', () => {
+  cy.location('pathname').should('include', '/categories');
 });
 
 Then('I should see only categories with parent {string}', (parentName: string) => {
