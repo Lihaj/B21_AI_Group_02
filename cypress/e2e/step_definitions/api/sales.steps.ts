@@ -1,7 +1,6 @@
 /// <reference types="cypress" />
 import { When, Then } from '@badeball/cypress-cucumber-preprocessor'
 
-// ── Existing steps ────────────────────────────────────────────────────────────
 
 When('I send a GET request to search sales page {string} size {string} sort by {string}', function (page: string, size: string, sortKey: string) {
 	cy.get('@token').then((token) => {
@@ -29,7 +28,6 @@ When('I send a POST request to create sale for plant id {string} with quantity {
 	})
 })
 
-// ── TC_API_SALES_12 / TC_API_SALES_13 / TC_API_SALES_17 ─────────────────────
 
 When('I send a GET request to retrieve all sales', function () {
 	cy.get('@token').then((token) => {
@@ -44,7 +42,22 @@ When('I send a GET request to retrieve all sales', function () {
 	})
 })
 
-// TC_API_SALES_12 / TC_API_SALES_17: list contains valid sale fields
+
+
+When('I send a GET request to retrieve sale with id {string}', function (saleId: string) {
+	cy.get('@token').then((token) => {
+		cy.env(['apiUrl']).then(({ apiUrl }) => {
+			cy.request({
+				method: 'GET',
+				url: `${apiUrl}/sales/${saleId}`,
+				headers: { Authorization: `Bearer ${token}` },
+				failOnStatusCode: false
+			}).as('response')
+		})
+	})
+})
+
+
 Then('the response body should contain a list of sales with valid fields', () => {
 	cy.get('@response').its('body').then((body) => {
 		expect(body).to.be.an('array')
@@ -59,16 +72,15 @@ Then('the response body should contain a list of sales with valid fields', () =>
 	})
 })
 
-// TC_API_SALES_13: empty list
+
 Then('the response body should be an empty array or list', () => {
 	cy.get('@response').its('body').then((body) => {
 		expect(body).to.be.an('array')
-		// Either an empty array (no sales) or a non-empty array (sales exist)
-		// The test validates that the endpoint returns 200 and a valid array in both cases
+
 	})
 })
 
-// ── TC_API_SALES_14: unauthenticated GET ─────────────────────────────────────
+
 
 When('I send a GET request to retrieve all sales without authentication', () => {
 	cy.env(['apiUrl']).then(({ apiUrl }) => {
@@ -80,7 +92,6 @@ When('I send a GET request to retrieve all sales without authentication', () => 
 	})
 })
 
-// ── TC_API_SALES_15: successful sale creation response assertions ─────────────
 
 Then('the response body should contain the sale details with plant and quantity', () => {
 	cy.get('@response').its('body').then((body) => {
@@ -92,7 +103,6 @@ Then('the response body should contain the sale details with plant and quantity'
 	})
 })
 
-// ── TC_API_SALES_16: quantity=0 → 400 ────────────────────────────────────────
 
 Then('the response body should contain an invalid quantity error', () => {
 	cy.get('@response').its('body').then((body) => {
@@ -104,7 +114,6 @@ Then('the response body should contain an invalid quantity error', () => {
 	})
 })
 
-// ── TC_API_SALES_18: unauthenticated DELETE ──────────────────────────────────
 
 When('I send a DELETE request to delete sale without authentication', () => {
 	cy.env(['apiUrl']).then(({ apiUrl }) => {
@@ -116,7 +125,6 @@ When('I send a DELETE request to delete sale without authentication', () => {
 	})
 })
 
-// ── TC_API_SALES_19: DELETE non-existing sale → 404 ─────────────────────────
 
 When('I send a DELETE request to delete sale with id {string}', function (saleId: string) {
 	cy.get('@token').then((token) => {
@@ -131,7 +139,6 @@ When('I send a DELETE request to delete sale with id {string}', function (saleId
 	})
 })
 
-// ── TC_API_SALES_20: non-admin DELETE → 403 ──────────────────────────────────
 
 When('I send a DELETE request to delete sale with id {string} as user', function (saleId: string) {
 	cy.get('@token').then((token) => {
@@ -146,7 +153,6 @@ When('I send a DELETE request to delete sale with id {string} as user', function
 	})
 })
 
-// ── TC_API_SALES_21: invalid id format ───────────────────────────────────────
 
 When('I send a DELETE request to delete sale with invalid id {string}', function (saleId: string) {
 	cy.get('@token').then((token) => {

@@ -15,19 +15,13 @@ Feature: User - Sales API
     Then the response status should be 500
     And the response body should contain the error message "No property 'profit' found for type 'Sale'"
 
-  @215521B @API_Sales_Read_002
-  Scenario: Admin receives empty list when no sales exist
-    When I send a GET request to retrieve all sales
-    Then the response status should be 200
-    And the response body should be an empty array or list
-
-  @215521B @API_Sales_Read_003
+  @215521B @API_Sales_Read_005
   Scenario: User can retrieve all sales successfully
     When I send a GET request to retrieve all sales
     Then the response status should be 200
     And the response body should contain a list of sales with valid fields
 
-  @215521B @API_Sales_Delete_001
+  @215521B @API_Sales_Delete_002
   Scenario: Non-Admin user is forbidden from deleting a sale
     When I send a DELETE request to delete sale with id "1" as user
     Then the response status should be 403
