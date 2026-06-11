@@ -41,6 +41,11 @@ Feature: User - Categories UI
     When I navigate to the categories page
     Then I should not see the "Add A Category" button
 
+  @215566P @UI_Category_Update_002
+  Scenario: Edit action disabled for user
+    When I navigate to the categories page
+    Then the edit action should be disabled for user
+
   @215566P @UI_Category_Delete_001
   Scenario: Delete category action disabled for user
     When I navigate to the categories page

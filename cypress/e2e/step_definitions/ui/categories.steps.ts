@@ -43,6 +43,10 @@ Then('the delete action should be disabled for user', () => {
   categoryPage.checkDeleteActionDisabledForUser();
 });
 
+Then('the edit action should be disabled for user', () => {
+  categoryPage.checkEditActionDisabledForUser();
+});
+
 Then('I should stay on the categories add page', () => {
   categoryPage.checkOnAddPage();
 });

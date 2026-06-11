@@ -44,6 +44,25 @@
     });
   }
 
+  checkEditActionDisabledForUser() {
+    cy.get('table tbody tr').first().then(($row) => {
+      const editElements = $row.find('button, a').filter((index, el) => {
+        const text = el.textContent?.trim() || '';
+        const hasPencilIcon = el.querySelector('i[class*="edit"], i[class*="pencil"], i[class*="pen"]');
+        return /edit/i.test(text) || hasPencilIcon;
+      });
+
+      expect(editElements.length).to.be.greaterThan(0);
+      const editEl = editElements.first();
+      const isDisabled = editEl.is(':disabled')
+        || editEl.hasClass('disabled')
+        || editEl.attr('aria-disabled') === 'true'
+        || getComputedStyle(editEl[0]).pointerEvents === 'none';
+
+      expect(isDisabled).to.be.true;
+    });
+  }
+
   clickSave() {
     this.saveButton.click({ force: true });
   }
