@@ -29,16 +29,23 @@ Feature: Admin - Sales UI
     And I click the sell save button
     Then I should see the quantity validation message
 
-  @215521B @UI_Sales_Cancel_001
-  Scenario: Admin is redirected back to sales list when cancel is clicked on sell plant page
+  @215521B @UI_Sales_Read_001
+  Scenario: Admin is redirected to sales list when cancel is clicked on the sales page
     When I navigate to the sales page
     And I click on the "Sell Plant" button on the sales page
     And I click on the cancel link on the sell plant page
     Then I should be on the sales list page
 
-  @215521B @UI_Sales_Cancel_002
-  Scenario: Admin is redirected back to sales list when cancel is clicked on sell plant page
+  @215521B @UI_Sales_Read_003
+  Scenario: Admin is redirected to sales list when cancel is clicked on sell plant page
     When I navigate to the sales page
     And I click on the "Sell Plant" button on the sales page
     And I click on the cancel link on the sell plant page
     Then I should be on the sales list page
+
+  @215521B @UI_Sales_Delete_002
+  Scenario: Admin delete sale shows confirmation prompt before deletion
+    When I navigate to the sales page
+    And I click on the first delete button on the sales page
+    Then I should see the sale delete confirmation prompt
+    And I should stay on the sales page
