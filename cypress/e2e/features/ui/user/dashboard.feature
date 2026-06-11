@@ -6,9 +6,9 @@ Feature: User - Dashboard UI
 
   @215523H @UI_Dashboard_Read_001
   Scenario: Dashboard shows number of Main and Sub categories
-    Given There are "2" main categories and "5" sub categories in the system
+    Given There are "2" main categories and "13" sub categories in the system
     When I navigate to the dashboard page
-    Then I should see "2" main and "5" sub categories in the dashboard category card
+    Then I should see "2" main and "13" sub categories in the dashboard category card
 
   @215523H @UI_Dashboard_Read_002
   Scenario: Dashboard shows number of total plants

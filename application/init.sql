@@ -47,6 +47,14 @@ INSERT INTO categories (name, parent_id) VALUES ('Ferns', 1);
 INSERT INTO categories (name, parent_id) VALUES ('Foliage', 1);
 INSERT INTO categories (name, parent_id) VALUES ('Shrubs', 2);
 INSERT INTO categories (name, parent_id) VALUES ('Flowering', 2);
+INSERT INTO categories (name, parent_id) VALUES ('Herbs', 1);
+INSERT INTO categories (name, parent_id) VALUES ('Cacti', 3);
+INSERT INTO categories (name, parent_id) VALUES ('Palms', 2);
+INSERT INTO categories (name, parent_id) VALUES ('Grasses', 2);
+INSERT INTO categories (name, parent_id) VALUES ('Climbers', 1);
+INSERT INTO categories (name, parent_id) VALUES ('Bulbs', 7);
+INSERT INTO categories (name, parent_id) VALUES ('Orchids', 1);
+INSERT INTO categories (name, parent_id) VALUES ('Fruits', 2);
 
 -- Seed plants
 INSERT INTO plants (name, price, quantity, category_id) VALUES ('Aloe Vera', 15.5, 100, 3);
