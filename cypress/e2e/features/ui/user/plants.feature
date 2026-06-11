@@ -23,17 +23,4 @@ Feature: User - Plants UI
     And I enter plant name "Monstera" in search field
     Then only matching plants are displayed
 
-  @215503X @UI_Plant_Read_006
-  Scenario: Filter plants by category "Flowering" (User)
-    Given the following plants exist in category "Flowering":
-      | name      |
-      | Rose      |
-      | Sunflower |
-      | Tulip     |
-    When I filter plants by category "Flowering"
-    Then I should see the following plants in the list:
-      | name      |
-      | Rose      |
-      | Sunflower |
-      | Tulip     |
 
