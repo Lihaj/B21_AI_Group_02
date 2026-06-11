@@ -44,6 +44,30 @@
     cy.contains('button', 'Search').click();
   }
 
+  clickReset() {
+    // Try common reset control selectors first, then fallback to text match.
+    cy.get('body').then(($body) => {
+      if ($body.find('button[type="reset"]').length) {
+        cy.get('button[type="reset"]').first().click({ force: true });
+        return;
+      }
+      if ($body.find('input[type="reset"]').length) {
+        cy.get('input[type="reset"]').first().click({ force: true });
+        return;
+      }
+      // fallback: look for any element containing reset/clear text (case-insensitive)
+      cy.contains(/reset|clear|reset filters/i).click({ force: true });
+    });
+  }
+
+  checkSearchInputCleared() {
+    cy.get('input[name="name"]').should('have.value', '');
+  }
+
+  checkParentCategoryFilterReverted(defaultLabel = 'All Parents') {
+    cy.get('select[name="parentId"]').find('option:selected').should('contain.text', defaultLabel);
+  }
+
   checkMatchingCategoryPresent(name: string) {
     cy.get('table').find('tbody tr').should('contain.text', name);
   }

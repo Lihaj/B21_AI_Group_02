@@ -37,12 +37,25 @@ When('I select {string} from the parent category dropdown', (parentName: string)
   categoryPage.selectParentCategory(parentName);
 });
 
+When('I click the Reset button', () => {
+  categoryPage.clickReset();
+});
+
 Then('I should see matching categories for {string}', (categoryName: string) => {
   categoryPage.checkMatchingCategoryPresent(categoryName);
 });
 
 Then('I should see only categories with parent {string}', (parentName: string) => {
   categoryPage.checkFilteredCategoriesByParent(parentName);
+});
+
+Then('the category search should be reset', () => {
+  categoryPage.checkSearchInputCleared();
+  categoryPage.checkParentCategoryFilterReverted();
+});
+
+Then('the full category list should be displayed again', () => {
+  categoryPage.checkCategoryTableVisible();
 });
 
 When('I observe the category list', () => {
