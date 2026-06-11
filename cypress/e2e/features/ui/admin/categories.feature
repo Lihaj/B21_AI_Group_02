@@ -26,3 +26,12 @@ Feature: Admin - Categories UI
     Then I should see the Category created successfully message
     And I should be redirected to the categories page
     And I should see matching categories for "NewCat1"
+
+  @215566P @UI_Category_Delete_002
+  Scenario: Delete category as Admin
+    When I navigate to the categories page
+    And I save the first category name
+    And I click the Delete button on a category
+    Then I should see the category delete confirmation prompt
+    And I should see the Category deleted successfully message
+    And the deleted category should not appear in the list

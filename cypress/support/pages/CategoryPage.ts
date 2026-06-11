@@ -1,4 +1,6 @@
 ﻿class CategoryPage {
+  private confirmationMessage = '';
+
   visit() {
     cy.visit('/categories');
   }
@@ -23,6 +25,25 @@
     cy.contains('a', /Add A Category/i).should('not.exist');
   }
 
+  checkDeleteActionDisabledForUser() {
+    cy.get('table tbody tr').first().then(($row) => {
+      const deleteElements = $row.find('button, a').filter((index, el) => {
+        const text = el.textContent?.trim() || '';
+        const hasTrashIcon = el.querySelector('i[class*="trash"]');
+        return /delete/i.test(text) || hasTrashIcon;
+      });
+
+      expect(deleteElements.length).to.be.greaterThan(0);
+      const deleteEl = deleteElements.first();
+      const isDisabled = deleteEl.is(':disabled')
+        || deleteEl.hasClass('disabled')
+        || deleteEl.attr('aria-disabled') === 'true'
+        || getComputedStyle(deleteEl[0]).pointerEvents === 'none';
+
+      expect(isDisabled).to.be.true;
+    });
+  }
+
   clickSave() {
     this.saveButton.click({ force: true });
   }
@@ -37,6 +58,26 @@
 
   enterCategoryFormName(name: string) {
     cy.get('input#name').clear().type(name);
+  }
+
+  clickFirstDelete() {
+    cy.on('window:confirm', (message: string) => {
+      this.confirmationMessage = message;
+      return true;
+    });
+
+    cy.get('table tbody tr').first().find('button').last().click({ force: true });
+  }
+
+  checkDeleteConfirmationPrompt() {
+    expect(this.confirmationMessage).to.eq('Delete this category?');
+  }
+
+  checkDeleteSuccessMessage(message = 'Category deleted successfully') {
+    cy.get('body')
+      .find('.alert-success, .alert, .toast, .notification, .message')
+      .contains(/Category deleted successfully/i)
+      .should('be.visible');
   }
 
   checkSuccessMessage(message = 'Category created successfully') {

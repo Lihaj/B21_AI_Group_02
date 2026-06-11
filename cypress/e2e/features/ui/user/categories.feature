@@ -40,3 +40,8 @@ Feature: User - Categories UI
   Scenario: Add Category button hidden for user
     When I navigate to the categories page
     Then I should not see the "Add A Category" button
+
+  @215566P @UI_Category_Delete_001
+  Scenario: Delete category action disabled for user
+    When I navigate to the categories page
+    Then the delete action should be disabled for user

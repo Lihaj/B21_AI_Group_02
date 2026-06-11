@@ -17,12 +17,26 @@ When('I click on the "Save" button on the category form', () => {
   categoryPage.clickSave();
 });
 
+When('I click the Delete button on a category', () => {
+  categoryPage.clickFirstDelete();
+});
+
+When('I save the first category name', () => {
+  categoryPage.getFirstRowText().then((text) => {
+    cy.wrap(text).as('deletedCategoryText');
+  });
+});
+
 Then('I should see the "Add A Category" button in the page header', () => {
   categoryPage.checkAddButtonVisible();
 });
 
 Then('I should not see the "Add A Category" button', () => {
   categoryPage.checkAddButtonNotVisible();
+});
+
+Then('the delete action should be disabled for user', () => {
+  categoryPage.checkDeleteActionDisabledForUser();
 });
 
 Then('I should stay on the categories add page', () => {
@@ -59,6 +73,20 @@ Then('I should see matching categories for {string}', (categoryName: string) => 
 
 Then('I should see the Category created successfully message', () => {
   categoryPage.checkSuccessMessage();
+});
+
+Then('I should see the category delete confirmation prompt', () => {
+  categoryPage.checkDeleteConfirmationPrompt();
+});
+
+Then('I should see the Category deleted successfully message', () => {
+  categoryPage.checkDeleteSuccessMessage();
+});
+
+Then('the deleted category should not appear in the list', () => {
+  cy.get('@deletedCategoryText').then((prevText: string) => {
+    cy.get('table tbody tr').should('not.contain.text', prevText);
+  });
 });
 
 Then('I should be redirected to the categories page', () => {
