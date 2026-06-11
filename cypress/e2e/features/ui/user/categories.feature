@@ -35,3 +35,8 @@ Feature: User - Categories UI
     And I click the Reset button
     Then the category search should be reset
     And the full category list should be displayed again
+
+  @215566P @UI_Category_Create_004
+  Scenario: Add Category button hidden for user
+    When I navigate to the categories page
+    Then I should not see the "Add A Category" button

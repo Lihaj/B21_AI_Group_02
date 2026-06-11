@@ -19,6 +19,10 @@
     this.addButton.should('be.visible');
   }
 
+  checkAddButtonNotVisible() {
+    cy.contains('a', /Add A Category/i).should('not.exist');
+  }
+
   clickSave() {
     this.saveButton.click({ force: true });
   }

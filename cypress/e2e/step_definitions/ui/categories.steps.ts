@@ -21,6 +21,10 @@ Then('I should see the "Add A Category" button in the page header', () => {
   categoryPage.checkAddButtonVisible();
 });
 
+Then('I should not see the "Add A Category" button', () => {
+  categoryPage.checkAddButtonNotVisible();
+});
+
 Then('I should stay on the categories add page', () => {
   categoryPage.checkOnAddPage();
 });
