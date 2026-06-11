@@ -21,6 +21,10 @@ When('I click the Delete button on a category', () => {
   categoryPage.clickFirstDelete();
 });
 
+When('I click the Edit button on a category', () => {
+  categoryPage.clickFirstEdit();
+});
+
 When('I save the first category name', () => {
   categoryPage.getFirstRowText().then((text) => {
     cy.wrap(text).as('deletedCategoryText');
@@ -73,6 +77,10 @@ Then('I should see matching categories for {string}', (categoryName: string) => 
 
 Then('I should see the Category created successfully message', () => {
   categoryPage.checkSuccessMessage();
+});
+
+Then('I should see the Category updated successfully message', () => {
+  categoryPage.checkUpdateSuccessMessage();
 });
 
 Then('I should see the category delete confirmation prompt', () => {

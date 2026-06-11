@@ -35,3 +35,14 @@ Feature: Admin - Categories UI
     Then I should see the category delete confirmation prompt
     And I should see the Category deleted successfully message
     And the deleted category should not appear in the list
+
+  @215566P @UI_Category_Update_001
+  Scenario: Edit existing category with valid data as Admin
+    When I navigate to the categories page
+    And I save the first category name
+    And I click the Edit button on a category
+    And I enter "UpdCat1" in the category name field
+    And I click on the "Save" button on the category form
+    Then I should see the Category updated successfully message
+    And I should be redirected to the categories page
+    And I should see matching categories for "UpdCat1"

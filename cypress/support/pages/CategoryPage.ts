@@ -69,6 +69,18 @@
     cy.get('table tbody tr').first().find('button').last().click({ force: true });
   }
 
+  clickFirstEdit() {
+    // assume the edit action is the first button/icon in the Actions column
+    cy.get('table tbody tr').first().find('button, a').first().click({ force: true });
+  }
+
+  checkUpdateSuccessMessage(message = 'Category updated successfully') {
+    cy.get('body')
+      .find('.alert-success, .alert, .toast, .notification, .message')
+      .contains(/Category updated successfully/i)
+      .should('be.visible');
+  }
+
   checkDeleteConfirmationPrompt() {
     expect(this.confirmationMessage).to.eq('Delete this category?');
   }
