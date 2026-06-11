@@ -33,8 +33,16 @@ When('I click the Search button', () => {
   categoryPage.clickSearch();
 });
 
+When('I select {string} from the parent category dropdown', (parentName: string) => {
+  categoryPage.selectParentCategory(parentName);
+});
+
 Then('I should see matching categories for {string}', (categoryName: string) => {
   categoryPage.checkMatchingCategoryPresent(categoryName);
+});
+
+Then('I should see only categories with parent {string}', (parentName: string) => {
+  categoryPage.checkFilteredCategoriesByParent(parentName);
 });
 
 When('I observe the category list', () => {

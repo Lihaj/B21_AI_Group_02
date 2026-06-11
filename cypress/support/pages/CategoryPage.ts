@@ -36,12 +36,22 @@
     cy.get('input[name="name"]').clear().type(name);
   }
 
+  selectParentCategory(parentName: string) {
+    cy.get('select[name="parentId"]').select(parentName);
+  }
+
   clickSearch() {
     cy.contains('button', 'Search').click();
   }
 
   checkMatchingCategoryPresent(name: string) {
     cy.get('table').find('tbody tr').should('contain.text', name);
+  }
+
+  checkFilteredCategoriesByParent(parentName: string) {
+    cy.get('table').find('tbody tr').each((row) => {
+      cy.wrap(row).find('td').eq(2).should('contain.text', parentName);
+    });
   }
 
   // Table & pagination helpers

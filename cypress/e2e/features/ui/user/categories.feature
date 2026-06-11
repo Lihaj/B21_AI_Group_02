@@ -19,3 +19,10 @@ Feature: User - Categories UI
     And I enter "Fruits" in the category search box
     And I click the Search button
     Then I should see matching categories for "Fruits"
+
+  @215566P @UI_Category_Read_003
+  Scenario: Filter categories by parent category as a normal user
+    When I navigate to the categories page
+    And I select "Indoor" from the parent category dropdown
+    And I click the Search button
+    Then I should see only categories with parent "Indoor"
