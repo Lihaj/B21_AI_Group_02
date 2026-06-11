@@ -25,6 +25,18 @@ Then('I should see the Category Name validation messages', () => {
   categoryPage.checkCategoryNameValidationMessages();
 });
 
+When('I enter {string} in the category search box', (categoryName: string) => {
+  categoryPage.enterSearchCategoryName(categoryName);
+});
+
+When('I click the Search button', () => {
+  categoryPage.clickSearch();
+});
+
+Then('I should see matching categories for {string}', (categoryName: string) => {
+  categoryPage.checkMatchingCategoryPresent(categoryName);
+});
+
 When('I observe the category list', () => {
   categoryPage.checkCategoryTableVisible();
 });

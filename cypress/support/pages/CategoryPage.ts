@@ -32,6 +32,18 @@
     cy.contains('Category name is required').should('be.visible');
   }
 
+  enterSearchCategoryName(name: string) {
+    cy.get('input[name="name"]').clear().type(name);
+  }
+
+  clickSearch() {
+    cy.contains('button', 'Search').click();
+  }
+
+  checkMatchingCategoryPresent(name: string) {
+    cy.get('table').find('tbody tr').should('contain.text', name);
+  }
+
   // Table & pagination helpers
   getCategoryRows() {
     return cy.get('table').find('tbody tr');
