@@ -38,7 +38,12 @@ class SalesPage {
 	}
 
 	checkQuantityValidationMessage() {
-		cy.contains('Quantity must be greater than 0').should('be.visible');
+		cy.get('input[name="quantity"], input#quantity').then($input => {
+			const validity = ($input[0] as HTMLInputElement).validity;
+			expect(validity.valid, 'Quantity input should be invalid (HTML5 validation blocked submit)').to.be.false;
+		});
+
+		cy.location('pathname').should('not.eq', '/ui/sales');
 	}
 
 	// ── Delete confirmation ──────────────────────────────────────────────────
