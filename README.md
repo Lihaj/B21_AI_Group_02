@@ -1,5 +1,4 @@
 # Cypress + Cucumber + TypeScript — Test Authoring Guide
-> **For AI agents and developers.** Follow these instructions exactly when creating, modifying, or extending tests in this project.
 
 ---
 
