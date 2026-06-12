@@ -1,4 +1,4 @@
-﻿class CategoryPage {
+class CategoryPage {
   private confirmationMessage = '';
 
   visit() {
@@ -30,7 +30,7 @@
       const deleteElements = $row.find('button, a').filter((index, el) => {
         const text = el.textContent?.trim() || '';
         const hasTrashIcon = el.querySelector('i[class*="trash"]');
-        return /delete/i.test(text) || hasTrashIcon;
+        return /delete/i.test(text) || !!hasTrashIcon;
       });
 
       expect(deleteElements.length).to.be.greaterThan(0);
@@ -49,7 +49,7 @@
       const editElements = $row.find('button, a').filter((index, el) => {
         const text = el.textContent?.trim() || '';
         const hasPencilIcon = el.querySelector('i[class*="edit"], i[class*="pencil"], i[class*="pen"]');
-        return /edit/i.test(text) || hasPencilIcon;
+        return /edit/i.test(text) || !!hasPencilIcon;
       });
 
       expect(editElements.length).to.be.greaterThan(0);
@@ -204,6 +204,47 @@
         cy.wrap(lastPageItem).find('a').click({ force: true });
       });
     });
+  }
+
+  checkCategoryCount(mainCount: string, subCount: string) {
+    this.visit();
+    let mainCategoryCount = 0;
+    let subCategoryCount = 0;
+    const countCategoriesOnPage = () => {
+      cy.get('table').find('tbody tr').then(rows => {
+        rows.each((_, row) => {
+          const parentCategory = Cypress.$(row).find('td').eq(2).text().trim();
+          if (parentCategory === '-') {
+            mainCategoryCount++;
+          } else {
+            subCategoryCount++;
+          }
+        });
+      });
+    };
+
+    const goToNextPage = () => {
+      cy.get('body').then(body => {
+        if (body.find('.pagination').length === 0) {
+          expect(mainCategoryCount.toString()).to.eq(mainCount);
+          expect(subCategoryCount.toString()).to.eq(subCount);
+        } else {
+          cy.get('.pagination').find('li').last().then(lastPageItem => {
+            if (lastPageItem.hasClass('disabled')) {
+              expect(mainCategoryCount.toString()).to.eq(mainCount);
+              expect(subCategoryCount.toString()).to.eq(subCount);
+            } else {
+              cy.wrap(lastPageItem).find('a').click({ force: true });
+              countCategoriesOnPage();
+              goToNextPage();
+            }
+          });
+        }
+      });
+    };
+
+    countCategoriesOnPage();
+    goToNextPage();
   }
 }
 

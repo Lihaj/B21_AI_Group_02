@@ -28,7 +28,6 @@ When('I send a POST request to create sale for plant id {string} with quantity {
 	})
 })
 
-
 When('I send a GET request to retrieve all sales', function () {
 	cy.get('@token').then((token) => {
 		cy.env(['apiUrl']).then(({ apiUrl }) => {
@@ -42,8 +41,6 @@ When('I send a GET request to retrieve all sales', function () {
 	})
 })
 
-
-
 When('I send a GET request to retrieve sale with id {string}', function (saleId: string) {
 	cy.get('@token').then((token) => {
 		cy.env(['apiUrl']).then(({ apiUrl }) => {
@@ -56,7 +53,6 @@ When('I send a GET request to retrieve sale with id {string}', function (saleId:
 		})
 	})
 })
-
 
 Then('the response body should contain a list of sales with valid fields', () => {
 	cy.get('@response').its('body').then((body) => {
@@ -72,16 +68,6 @@ Then('the response body should contain a list of sales with valid fields', () =>
 	})
 })
 
-
-Then('the response body should be an empty array or list', () => {
-	cy.get('@response').its('body').then((body) => {
-		expect(body).to.be.an('array')
-
-	})
-})
-
-
-
 When('I send a GET request to retrieve all sales without authentication', () => {
 	cy.env(['apiUrl']).then(({ apiUrl }) => {
 		cy.request({
@@ -92,29 +78,6 @@ When('I send a GET request to retrieve all sales without authentication', () => 
 	})
 })
 
-
-Then('the response body should contain the sale details with plant and quantity', () => {
-	cy.get('@response').its('body').then((body) => {
-		expect(body).to.have.property('id')
-		expect(body).to.have.property('plant')
-		expect(body).to.have.property('quantity')
-		expect(body).to.have.property('totalPrice')
-		expect(body).to.have.property('soldAt')
-	})
-})
-
-
-Then('the response body should contain an invalid quantity error', () => {
-	cy.get('@response').its('body').then((body) => {
-		const bodyStr = JSON.stringify(body)
-		const hasMessage = bodyStr.includes('message') ||
-		                   bodyStr.includes('error') ||
-		                   bodyStr.includes('quantity')
-		expect(hasMessage).to.be.true
-	})
-})
-
-
 When('I send a DELETE request to delete sale without authentication', () => {
 	cy.env(['apiUrl']).then(({ apiUrl }) => {
 		cy.request({
@@ -124,7 +87,6 @@ When('I send a DELETE request to delete sale without authentication', () => {
 		}).as('response')
 	})
 })
-
 
 When('I send a DELETE request to delete sale with id {string}', function (saleId: string) {
 	cy.get('@token').then((token) => {
@@ -153,7 +115,6 @@ When('I send a DELETE request to delete sale with id {string} as user', function
 	})
 })
 
-
 When('I send a DELETE request to delete sale with invalid id {string}', function (saleId: string) {
 	cy.get('@token').then((token) => {
 		cy.env(['apiUrl']).then(({ apiUrl }) => {
@@ -164,5 +125,31 @@ When('I send a DELETE request to delete sale with invalid id {string}', function
 				failOnStatusCode: false
 			}).as('response')
 		})
+	})
+})
+
+Then('the response body should contain the sale details with plant and quantity', () => {
+	cy.get('@response').its('body').then((body) => {
+		expect(body).to.have.property('id')
+		expect(body).to.have.property('plant')
+		expect(body).to.have.property('quantity')
+		expect(body).to.have.property('totalPrice')
+		expect(body).to.have.property('soldAt')
+	})
+})
+
+Then('the response body should contain an invalid quantity error', () => {
+	cy.get('@response').its('body').then((body) => {
+		const bodyStr = JSON.stringify(body)
+		const hasMessage = bodyStr.includes('message') ||
+		                   bodyStr.includes('error') ||
+		                   bodyStr.includes('quantity')
+		expect(hasMessage).to.be.true
+	})
+})
+
+Then('the response body should be an empty array or list', () => {
+	cy.get('@response').its('body').then((body) => {
+		expect(body).to.be.an('array')
 	})
 })
