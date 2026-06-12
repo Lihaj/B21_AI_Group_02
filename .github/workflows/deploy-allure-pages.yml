@@ -1,0 +1,89 @@
+name: Deploy Allure Report to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  deploy-allure-report:
+    name: Build tests and publish Allure report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start application stack
+        working-directory: application
+        run: docker compose up --build -d
+
+      - name: Wait for application UI
+        run: |
+          echo "Waiting for UI to become ready..."
+          for attempt in {1..30}; do
+            if curl -fsS http://localhost:8080/ui/login > /dev/null; then
+              echo "UI is ready!"
+              break
+            fi
+            echo "Waiting for UI... ($attempt/30)"
+            sleep 10
+          done
+
+          echo "Waiting for API to become ready..."
+          for attempt in {1..20}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET http://localhost:8080/api/health -H "Accept: */*")
+            if [[ "$STATUS" == "200" || "$STATUS" == "401" ]]; then
+              echo "API is ready! (status: $STATUS)"
+              break
+            fi
+            echo "Waiting for API... ($attempt/20) [HTTP $STATUS]"
+            sleep 5
+          done
+
+      - name: Run Cypress tests with Allure
+        run: npm test -- --env allure=true
+        env:
+          CYPRESS_FRONTEND_URL: ${{ vars.CYPRESS_FRONTEND_URL }}
+          CYPRESS_API_URL: ${{ vars.CYPRESS_API_URL }}
+          CYPRESS_ADMIN_USER: ${{ secrets.CYPRESS_ADMIN_USER }}
+          CYPRESS_ADMIN_PASS: ${{ secrets.CYPRESS_ADMIN_PASS }}
+          CYPRESS_TEST_USER: ${{ secrets.CYPRESS_TEST_USER }}
+          CYPRESS_TEST_PASS: ${{ secrets.CYPRESS_TEST_PASS }}
+          DB_HOST: ${{ vars.DB_HOST }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ vars.DB_NAME }}
+
+      - name: Generate Allure report
+        run: npx allure generate allure-results --clean -o allure-report
+
+      - name: Deploy Allure report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./allure-report
+          publish_branch: gh-pages
+          user_name: github-actions[bot]
+          user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          keep_files: false
