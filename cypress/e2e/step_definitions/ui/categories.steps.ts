@@ -31,6 +31,43 @@ When('I save the first category name', () => {
   });
 });
 
+When('I enter {string} in the category search box', (categoryName: string) => {
+  categoryPage.enterSearchCategoryName(categoryName);
+});
+
+When('I enter {string} in the category name field', (categoryName: string) => {
+  categoryPage.enterCategoryFormName(categoryName);
+});
+
+When('I click the Search button', () => {
+  categoryPage.clickSearch();
+});
+
+When('I select {string} from the parent category dropdown', (parentName: string) => {
+  categoryPage.selectParentCategory(parentName);
+});
+
+When('I click the Reset button', () => {
+  categoryPage.clickReset();
+});
+
+When('I observe the category list', () => {
+  categoryPage.checkCategoryTableVisible();
+});
+
+When('I scroll to the bottom of the page', () => {
+  categoryPage.scrollToBottom();
+});
+
+When('I navigate to the next page', function () {
+  // capture first row text to verify page change
+  categoryPage.getFirstRowText().then((text) => {
+    cy.wrap(text).as('firstRowText');
+  }).then(() => {
+    categoryPage.goToNextPage();
+  });
+});
+
 Then('I should see the "Add A Category" button in the page header', () => {
   categoryPage.checkAddButtonVisible();
 });
@@ -53,26 +90,6 @@ Then('I should stay on the categories add page', () => {
 
 Then('I should see the Category Name validation messages', () => {
   categoryPage.checkCategoryNameValidationMessages();
-});
-
-When('I enter {string} in the category search box', (categoryName: string) => {
-  categoryPage.enterSearchCategoryName(categoryName);
-});
-
-When('I enter {string} in the category name field', (categoryName: string) => {
-  categoryPage.enterCategoryFormName(categoryName);
-});
-
-When('I click the Search button', () => {
-  categoryPage.clickSearch();
-});
-
-When('I select {string} from the parent category dropdown', (parentName: string) => {
-  categoryPage.selectParentCategory(parentName);
-});
-
-When('I click the Reset button', () => {
-  categoryPage.clickReset();
 });
 
 Then('I should see matching categories for {string}', (categoryName: string) => {
@@ -118,25 +135,8 @@ Then('the full category list should be displayed again', () => {
   categoryPage.checkCategoryTableVisible();
 });
 
-When('I observe the category list', () => {
-  categoryPage.checkCategoryTableVisible();
-});
-
-When('I scroll to the bottom of the page', () => {
-  categoryPage.scrollToBottom();
-});
-
 Then('I should see pagination controls', () => {
   categoryPage.checkPaginationVisible();
-});
-
-When('I navigate to the next page', function () {
-  // capture first row text to verify page change
-  categoryPage.getFirstRowText().then((text) => {
-    cy.wrap(text).as('firstRowText');
-  }).then(() => {
-    categoryPage.goToNextPage();
-  });
 });
 
 Then('the category list should update to the next page', function () {

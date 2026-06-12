@@ -1,7 +1,6 @@
 import { Before, After, Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import salesPage from '../../../support/pages/SalesPage';
 
-// ── Hooks for empty-state test ────────────────────────────────────────────────
 
 // Before @UI_Sales_Read_006: wipe sales so the empty-state message is visible
 Before({ tags: '@UI_Sales_Read_006' }, () => {
@@ -22,13 +21,9 @@ After({ tags: '@UI_Sales_Read_006' }, () => {
 	});
 });
 
-// ── Navigation ────────────────────────────────────────────────────────────────
-
 When('I navigate to the sales page', () => {
 	salesPage.visit();
 });
-
-// ── Sell Plant form ───────────────────────────────────────────────────────────
 
 When('I click on the {string} button on the sales page', (buttonText: string) => {
 	cy.contains('a', buttonText).click();
@@ -54,19 +49,13 @@ When('I click on the cancel link on the sell plant page', () => {
 	salesPage.clickCancelLink();
 });
 
-// ── Delete confirmation ───────────────────────────────────────────────────────
-
 When('I click on the first delete button on the sales page', () => {
 	salesPage.clickFirstDelete();
 });
 
-// ── Sorting ───────────────────────────────────────────────────────────────────
-
 When('I click on the quantity column header', () => {
 	salesPage.clickQuantityColumnHeader();
 });
-
-// ── Assertions ────────────────────────────────────────────────────────────────
 
 Then('the sale should be created successfully', () => {
 	salesPage.checkSaleCreatedSuccessfully();

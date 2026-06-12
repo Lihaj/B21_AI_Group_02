@@ -75,22 +75,6 @@ When('I send a PUT request to update category with id {string} and category name
   })
 })
 
-Then('the retrieved category with id {string} should have the name {string}', (categoryId: string, categoryName: string) => {
-  cy.get('@token').then((token) => {
-    cy.env(['apiUrl']).then(({ apiUrl }) => {
-      cy.request({
-        method: 'GET',
-        url: `${apiUrl}/categories/${categoryId}`,
-        headers: { Authorization: `Bearer ${token}` },
-        failOnStatusCode: false
-      }).then((response) => {
-        expect(response.status).to.eq(200);
-        expect(response.body.name).to.eq(categoryName);
-      });
-    });
-  });
-});
-
 When('I send a GET request to view category with id {string}', (categoryId: string) => {
   cy.get('@token').then((token) => {
     cy.env(['apiUrl']).then(({ apiUrl }) => {
@@ -129,3 +113,19 @@ When('I send a GET request to filter categories by parent id {string}', (parentI
     })
   })
 })
+
+Then('the retrieved category with id {string} should have the name {string}', (categoryId: string, categoryName: string) => {
+  cy.get('@token').then((token) => {
+    cy.env(['apiUrl']).then(({ apiUrl }) => {
+      cy.request({
+        method: 'GET',
+        url: `${apiUrl}/categories/${categoryId}`,
+        headers: { Authorization: `Bearer ${token}` },
+        failOnStatusCode: false
+      }).then((response) => {
+        expect(response.status).to.eq(200);
+        expect(response.body.name).to.eq(categoryName);
+      });
+    });
+  });
+});
