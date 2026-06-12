@@ -1,4 +1,4 @@
-﻿import { Then, When } from '@badeball/cypress-cucumber-preprocessor';
+import { Then, When } from '@badeball/cypress-cucumber-preprocessor';
 import categoryPage from '../../../support/pages/CategoryPage';
 
 When('I navigate to the categories page', () => {
@@ -96,7 +96,7 @@ Then('I should see the Category deleted successfully message', () => {
 });
 
 Then('the deleted category should not appear in the list', () => {
-  cy.get('@deletedCategoryText').then((prevText: string) => {
+  cy.get<string>('@deletedCategoryText').then((prevText: string) => {
     cy.get('table tbody tr').should('not.contain.text', prevText);
   });
 });
@@ -140,7 +140,7 @@ When('I navigate to the next page', function () {
 });
 
 Then('the category list should update to the next page', function () {
-  cy.get('@firstRowText').then((prevText: string) => {
+  cy.get<string>('@firstRowText').then((prevText: string) => {
     // wait for possible navigation
     cy.get('table').find('tbody tr').first().invoke('text').should('not.eq', prevText);
   });

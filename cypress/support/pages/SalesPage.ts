@@ -160,6 +160,40 @@ class SalesPage {
 		countSalesOnPage();
 		goToNextPage();
 	}
+
+	checkSalesRevenueInSystem() {
+		this.visit();
+		let totalRevenue = 0;
+		const calculateRevenueOnPage = () => {
+			cy.get('table').find('tbody tr').then(rows => {
+				rows.each((_, row) => {
+					const saleValue = parseFloat(Cypress.$(row).find('td').eq(2).text().trim());
+					totalRevenue += saleValue;
+				});
+			});
+		};
+		const goToNextPage = () => {
+			cy.get('body').then(body => {
+				if (body.find('.pagination').length === 0) {
+					expect(totalRevenue.toString()).to.eq(totalRevenue.toString());
+				} else {
+					cy.get('.pagination').find('li').last().then(lastPageItem => {
+						if (lastPageItem.hasClass('disabled')) {
+							expect(totalRevenue.toString()).to.eq(totalRevenue.toString());
+						} else {
+							cy.wrap(lastPageItem).find('a').click({ force: true });
+							calculateRevenueOnPage();
+							goToNextPage();
+						}
+					});
+				}
+			});
+		};
+
+		calculateRevenueOnPage();
+		goToNextPage();
+		cy.wrap(totalRevenue).as('totalRevenue');
+	}
 }
 
 export default new SalesPage();
