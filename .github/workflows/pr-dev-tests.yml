@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - dev
+      - main
 
 permissions:
   contents: read
@@ -95,7 +96,7 @@ jobs:
               echo "Allure report generation failed for @${TAG}"
             fi
 
-            node - "$TAG" "$duration_seconds" "$SUMMARY_FILE" "$EXPECTED_FAILS" <<'NODE'
+          node - "$TAG" "$duration_seconds" "$SUMMARY_FILE" "$EXPECTED_FAILS" <<'NODE'
           const fs = require('fs');
           const [tag, durationSeconds, summaryFile, expectedFails] = process.argv.slice(2);
           const reportPath = 'allure-report/summary.json';
