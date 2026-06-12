@@ -78,12 +78,13 @@ jobs:
       - name: Generate Allure report
         run: npx allure generate allure-results --clean -o allure-report
 
-      - name: Deploy Allure report to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Allure report artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./allure-report
-          publish_branch: gh-pages
-          user_name: github-actions[bot]
-          user_email: 41898282+github-actions[bot]@users.noreply.github.com
-          keep_files: false
+          path: ./allure-report
+
+      - name: Deploy Allure report to GitHub Pages
+        uses: actions/deploy-pages@v1
