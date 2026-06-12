@@ -33,6 +33,7 @@ Then('I should see {string} sales in the dashboard sales card', (sales: string) 
 });
 
 Given('There are {int} sales in the system', (sales: number) => {
+    salesPage.visit();
     salesPage.checkSalesCount(sales.toString());
 });
 
