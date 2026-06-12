@@ -1,4 +1,28 @@
 class PlantPage {
+	get addPlantButton() {
+		return cy.contains('a', 'Add a Plant');
+	}
+
+	get cancelLink() {
+		return cy.contains('a', 'Cancel');
+	}
+
+	get saveButton() {
+		return cy.contains('button', 'Save');
+	}
+
+	get nameInput() {
+		return cy.get('input#name, input[name="name"], input[type="text"]').first();
+	}
+
+	get priceInput() {
+		return cy.get('input#price, input[name="price"], input[type="number"]').first();
+	}
+
+	get quantityInput() {
+		return cy.get('input#quantity, input[name="quantity"], input[type="number"]').last();
+	}
+
 	visit() {
 		cy.visit('plants');
 	}
@@ -8,15 +32,15 @@ class PlantPage {
 	}
 
 	clickAddPlant() {
-		cy.contains('a', 'Add a Plant').click();
+		this.addPlantButton.click();
 	}
 
 	clickCancel() {
-		cy.contains('a', 'Cancel').click();
+		this.cancelLink.click();
 	}
 
 	clickSave() {
-		cy.contains('button', 'Save').click({ force: true });
+		this.saveButton.click({ force: true });
 	}
 
 	checkOnPlantsPage() {
@@ -28,9 +52,9 @@ class PlantPage {
 	}
 
 	fillPlantForm(name: string, price: string, quantity: string) {
-		cy.get('input[type="text"]').clear().type(name);
-		cy.get('input[type="number"]').first().clear().type(price);
-		cy.get('input[type="number"]').last().clear().type(quantity);
+		this.nameInput.clear().type(name);
+		this.priceInput.clear().type(price);
+		this.quantityInput.clear().type(quantity);
 	}
 
 	selectCategory(category: string) {

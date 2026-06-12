@@ -43,7 +43,7 @@ When('I send a POST request to create category without category name', function 
 })
 
 When('I send a DELETE request to delete the category from previous response', function () {
-  cy.get('@response').then((response) => {
+  cy.get<Cypress.Response<any>>('@response').then((response) => {
     const categoryId = response.body?.id
     if (!categoryId) {
       throw new Error('Created category id is missing from response body')
