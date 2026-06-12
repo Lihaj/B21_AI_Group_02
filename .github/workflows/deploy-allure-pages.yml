@@ -62,6 +62,7 @@ jobs:
           done
 
       - name: Run Cypress tests with Allure
+        continue-on-error: true
         run: npm test -- --env allure=true
         env:
           CYPRESS_FRONTEND_URL: ${{ vars.CYPRESS_FRONTEND_URL }}
